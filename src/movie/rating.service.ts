@@ -1,0 +1,101 @@
+import {
+  ConflictException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import type { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { DatabaseService } from '../database/database.service.js';
+import type { CreateRatingDto } from './dto/create-rating.dto.js';
+import type { UpdateRatingDto } from './dto/update-rating.dto.js';
+import { MemberService } from './member.service.js';
+
+@Injectable()
+export class RatingService {
+  constructor(
+    @Inject(DatabaseService) private readonly db: DatabaseService,
+    @Inject(MemberService) private readonly members: MemberService,
+  ) {}
+
+  async getRatingsByMember(memberId: number) {
+    await this.members.requireMember(memberId);
+    const [rows] = await this.db.pool.execute<RowDataPacket[]>(
+      'SELECT rating_id, member_id, movie_id, score, comment FROM rating WHERE member_id = ? ORDER BY rating_id DESC',
+      [memberId],
+    );
+    return rows.map((row) => ({
+      ratingId: Number(row.rating_id),
+      memberId: Number(row.member_id),
+      movieId: Number(row.movie_id),
+      score: Number(row.score),
+      comment: row.comment as string | null,
+    }));
+  }
+
+  async create(memberId: number, dto: CreateRatingDto): Promise<number> {
+    await this.members.requireMember(memberId);
+    const [existing] = await this.db.pool.execute<RowDataPacket[]>(
+      'SELECT rating_id FROM rating WHERE member_id = ? AND movie_id = ? LIMIT 1',
+      [memberId, dto.movieId],
+    );
+    if (existing.length) {
+      throw new ConflictException({
+        code: 'RATING4091',
+        message: '이미 이 영화에 평점을 남기셨습니다.',
+      });
+    }
+    const [saved] = await this.db.pool.execute<ResultSetHeader>(
+      'INSERT INTO rating (member_id, movie_id, score, comment) VALUES (?, ?, ?, ?)',
+      [memberId, dto.movieId, dto.score, dto.comment ?? null],
+    );
+    return saved.insertId;
+  }
+
+  async update(
+    ratingId: number,
+    memberId: number,
+    dto: UpdateRatingDto,
+  ): Promise<void> {
+    await this.requireOwnedRating(ratingId, memberId);
+    // The owner predicate also protects the actual write after the initial read.
+    const [updated] = await this.db.pool.execute<ResultSetHeader>(
+      'UPDATE rating SET score = ?, comment = ? WHERE rating_id = ? AND member_id = ?',
+      [dto.score, dto.comment ?? null, ratingId, memberId],
+    );
+    if (!updated.affectedRows) this.ratingNotFound();
+  }
+
+  async delete(ratingId: number, memberId: number): Promise<void> {
+    await this.requireOwnedRating(ratingId, memberId);
+    const [deleted] = await this.db.pool.execute<ResultSetHeader>(
+      'DELETE FROM rating WHERE rating_id = ? AND member_id = ?',
+      [ratingId, memberId],
+    );
+    if (!deleted.affectedRows) this.ratingNotFound();
+  }
+
+  private async requireOwnedRating(
+    ratingId: number,
+    memberId: number,
+  ): Promise<void> {
+    const [rows] = await this.db.pool.execute<RowDataPacket[]>(
+      'SELECT rating_id, member_id FROM rating WHERE rating_id = ? LIMIT 1',
+      [ratingId],
+    );
+    if (!rows.length) this.ratingNotFound();
+    if (Number(rows[0].member_id) !== memberId) {
+      throw new ForbiddenException({
+        code: 'RATING4031',
+        message: '본인이 작성한 평점만 수정하거나 삭제할 수 있습니다.',
+      });
+    }
+  }
+
+  private ratingNotFound(): never {
+    throw new NotFoundException({
+      code: 'RATING4041',
+      message: '존재하지 않는 평점입니다.',
+    });
+  }
+}

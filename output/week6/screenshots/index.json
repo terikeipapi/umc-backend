@@ -1,0 +1,85 @@
+{
+  "source": "Actual HTTP request/response records in ../evidence.json, rendered as archival evidence.",
+  "runAt": "2026-11-03T08:38:46.359Z",
+  "generatedAt": "2026-11-03T08:41:00.850Z",
+  "captures": [
+    {
+      "id": "01-signup-success",
+      "title": "회원가입 성공",
+      "status": 201,
+      "path": "screenshots/01-signup-success.png"
+    },
+    {
+      "id": "02-validation-failure",
+      "title": "이메일 형식 검증 실패",
+      "status": 400,
+      "path": "screenshots/02-validation-failure.png"
+    },
+    {
+      "id": "16-rating-created",
+      "title": "평점 등록 성공",
+      "status": 201,
+      "path": "screenshots/16-rating-created.png"
+    },
+    {
+      "id": "23-rating-updated",
+      "title": "평점 수정 성공",
+      "status": 200,
+      "path": "screenshots/23-rating-updated.png"
+    },
+    {
+      "id": "25-rating-deleted",
+      "title": "평점 삭제 성공 - 본문 없음",
+      "status": 204,
+      "path": "screenshots/25-rating-deleted.png"
+    },
+    {
+      "id": "17-duplicate-rating",
+      "title": "중복 평점 차단",
+      "status": 409,
+      "path": "screenshots/17-duplicate-rating.png"
+    },
+    {
+      "id": "19-owner-forbidden-patch",
+      "title": "다른 회원의 수정 차단",
+      "status": 403,
+      "path": "screenshots/19-owner-forbidden-patch.png"
+    },
+    {
+      "id": "21-missing-rating-patch",
+      "title": "없는 평점 수정",
+      "status": 404,
+      "path": "screenshots/21-missing-rating-patch.png"
+    },
+    {
+      "id": "05-duplicate-email",
+      "title": "이메일 중복 차단",
+      "status": 409,
+      "path": "screenshots/05-duplicate-email.png"
+    },
+    {
+      "id": "06-duplicate-nickname",
+      "title": "닉네임 중복 차단",
+      "status": 409,
+      "path": "screenshots/06-duplicate-nickname.png"
+    },
+    {
+      "id": "11-invalid-score",
+      "title": "별점 범위 검증 실패",
+      "status": 400,
+      "path": "screenshots/11-invalid-score.png"
+    },
+    {
+      "id": "28-race-1",
+      "title": "동시 회원가입 - UNIQUE 최종 보호",
+      "status": 201,
+      "path": "screenshots/28-race-1.png"
+    },
+    {
+      "id": "28-race-2",
+      "title": "동시 회원가입 - UNIQUE 최종 보호",
+      "status": 409,
+      "path": "screenshots/28-race-2.png"
+    }
+  ]
+}

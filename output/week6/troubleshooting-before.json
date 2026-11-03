@@ -1,0 +1,14 @@
+{
+  "phase": "before-fix",
+  "request": {
+    "method": "GET",
+    "url": "http://localhost:3000/members/1e0/ratings"
+  },
+  "status": 404,
+  "body": {
+    "isSuccess": false,
+    "code": "MEMBER4041",
+    "message": "존재하지 않는 유저입니다.",
+    "result": null
+  }
+}

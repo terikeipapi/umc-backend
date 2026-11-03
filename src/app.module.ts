@@ -8,6 +8,7 @@ import { BooksModule } from './books/books.module.js';
 import { DatabaseService } from './database/database.service.js';
 import { LibraryController } from './library/library.controller.js';
 import { LibraryService } from './library/library.service.js';
+import { MovieModule } from './movie/movie.module.js';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { LibraryService } from './library/library.service.js';
       }),
     }),
     BooksModule,
+    MovieModule,
   ],
   controllers: [AppController, LibraryController],
   providers: [AppService, DatabaseService, LibraryService],

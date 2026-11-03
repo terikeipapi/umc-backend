@@ -1,3 +1,33 @@
+# UMC 백엔드 스터디
+
+## 6주차: 회원가입과 영화 평점
+
+NestJS와 MySQL로 회원가입, 평점 등록·수정·삭제, 입력 검증, 공통 오류 응답을 구현했습니다.
+
+- [실습·필수 미션 제출 가이드](docs/week6/SUBMISSION.md)
+- [API 명세](docs/week6/API.md)
+- [8쪽 수행 보고서 PDF](output/pdf/week6-submission.pdf)
+- [실습 인증 및 미션 캡처 13장](output/week6/screenshots/)
+- [핵심 구현 코드](src/movie/), [공통 검증·예외 처리](src/common/)
+- [Postman Collection](docs/week6/week6.postman_collection.json), [Environment](docs/week6/week6.postman_environment.json)
+- [트러블슈팅 기록](docs/week6/TROUBLESHOOTING.md)
+- [전체 제출 패키지 ZIP](output/week6-submission.zip)
+
+검증 결과: 빌드 성공, 단위 테스트 1개, E2E 테스트 106개, 실제 MySQL HTTP 검증 29건 통과.
+
+`.env.example`을 참고해 로컬 MySQL 설정을 준비한 뒤 실행합니다.
+
+```bash
+npm install
+npm run week6:db
+npm run build
+npm run start:prod
+```
+
+서버를 실행한 상태에서 다른 터미널의 `npm run week6:verify`로 실제 HTTP 검증을 수행할 수 있습니다. 검증은 데모 회원을 생성합니다. [실행 기록 HTML](output/week6/report.html)은 파일을 내려받아 브라우저에서 열면 요청·응답을 선택해 확인할 수 있습니다.
+
+---
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>

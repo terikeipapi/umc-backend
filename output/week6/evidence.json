@@ -1,0 +1,897 @@
+{
+  "runAt": "2026-11-03T08:38:46.359Z",
+  "runAtSeoul": "2026-11-03 17:38:46",
+  "baseUrl": "http://localhost:3000",
+  "source": "Real HTTP requests to the compiled NestJS app and real local MySQL queries.",
+  "runTag": "w0frl93",
+  "requests": [
+    {
+      "id": "01-signup-success",
+      "title": "회원가입 성공",
+      "at": "2026-11-03T08:38:46.734Z",
+      "request": {
+        "method": "POST",
+        "path": "/members",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "week6-w0frl93@example.com",
+          "password": "Umc!1234",
+          "nickname": "w6w0frl93a"
+        }
+      },
+      "response": {
+        "status": 201,
+        "statusText": "Created",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON201",
+          "message": "회원가입에 성공했습니다.",
+          "result": {
+            "memberId": 1,
+            "email": "week6-w0frl93@example.com",
+            "nickname": "w6w0frl93a"
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON201\",\"message\":\"회원가입에 성공했습니다.\",\"result\":{\"memberId\":1,\"email\":\"week6-w0frl93@example.com\",\"nickname\":\"w6w0frl93a\"}}"
+      },
+      "elapsedMs": 213,
+      "passed": true
+    },
+    {
+      "id": "02-validation-failure",
+      "title": "이메일 형식 검증 실패",
+      "at": "2026-11-03T08:38:46.745Z",
+      "request": {
+        "method": "POST",
+        "path": "/members",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "invalid-email",
+          "password": "Umc!1234",
+          "nickname": "w6w0frl93a"
+        }
+      },
+      "response": {
+        "status": 400,
+        "statusText": "Bad Request",
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "올바른 이메일 형식이 아닙니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"COMMON4001\",\"message\":\"올바른 이메일 형식이 아닙니다.\",\"result\":null}"
+      },
+      "elapsedMs": 10,
+      "passed": true
+    },
+    {
+      "id": "03-weak-password",
+      "title": "비밀번호 조합 검증 실패",
+      "at": "2026-11-03T08:38:46.750Z",
+      "request": {
+        "method": "POST",
+        "path": "/members",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "week6-w0frl93@example.com",
+          "password": "password123",
+          "nickname": "w6w0frl93a"
+        }
+      },
+      "response": {
+        "status": 400,
+        "statusText": "Bad Request",
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "비밀번호는 대문자/소문자/숫자/특수문자를 포함한 8자 이상이어야 합니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"COMMON4001\",\"message\":\"비밀번호는 대문자/소문자/숫자/특수문자를 포함한 8자 이상이어야 합니다.\",\"result\":null}"
+      },
+      "elapsedMs": 5,
+      "passed": true
+    },
+    {
+      "id": "04-invalid-nickname",
+      "title": "닉네임 길이 검증 실패",
+      "at": "2026-11-03T08:38:46.754Z",
+      "request": {
+        "method": "POST",
+        "path": "/members",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "week6-w0frl93@example.com",
+          "password": "Umc!1234",
+          "nickname": "a"
+        }
+      },
+      "response": {
+        "status": 400,
+        "statusText": "Bad Request",
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "닉네임은 2자 이상이어야 합니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"COMMON4001\",\"message\":\"닉네임은 2자 이상이어야 합니다.\",\"result\":null}"
+      },
+      "elapsedMs": 5,
+      "passed": true
+    },
+    {
+      "id": "05-duplicate-email",
+      "title": "이메일 중복 차단",
+      "at": "2026-11-03T08:38:46.762Z",
+      "request": {
+        "method": "POST",
+        "path": "/members",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "week6-w0frl93@example.com",
+          "password": "Umc!1234",
+          "nickname": "ew0frl93"
+        }
+      },
+      "response": {
+        "status": 409,
+        "statusText": "Conflict",
+        "body": {
+          "isSuccess": false,
+          "code": "MEMBER4091",
+          "message": "이미 사용 중인 이메일입니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"MEMBER4091\",\"message\":\"이미 사용 중인 이메일입니다.\",\"result\":null}"
+      },
+      "elapsedMs": 7,
+      "passed": true
+    },
+    {
+      "id": "06-duplicate-nickname",
+      "title": "닉네임 중복 차단",
+      "at": "2026-11-03T08:38:46.771Z",
+      "request": {
+        "method": "POST",
+        "path": "/members",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "nick-w0frl93@example.com",
+          "password": "Umc!1234",
+          "nickname": "w6w0frl93a"
+        }
+      },
+      "response": {
+        "status": 409,
+        "statusText": "Conflict",
+        "body": {
+          "isSuccess": false,
+          "code": "MEMBER4092",
+          "message": "이미 사용 중인 닉네임입니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"MEMBER4092\",\"message\":\"이미 사용 중인 닉네임입니다.\",\"result\":null}"
+      },
+      "elapsedMs": 9,
+      "passed": true
+    },
+    {
+      "id": "07-extra-field",
+      "title": "허용하지 않은 필드 거절",
+      "at": "2026-11-03T08:38:46.776Z",
+      "request": {
+        "method": "POST",
+        "path": "/members",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "week6-w0frl93@example.com",
+          "password": "Umc!1234",
+          "nickname": "w6w0frl93a",
+          "isAdmin": true
+        }
+      },
+      "response": {
+        "status": 400,
+        "statusText": "Bad Request",
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "property isAdmin should not exist",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"COMMON4001\",\"message\":\"property isAdmin should not exist\",\"result\":null}"
+      },
+      "elapsedMs": 5,
+      "passed": true
+    },
+    {
+      "id": "08-other-member",
+      "title": "소유권 검증용 두 번째 회원",
+      "at": "2026-11-03T08:38:46.903Z",
+      "request": {
+        "method": "POST",
+        "path": "/members",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "week6-w0frl93-other@example.com",
+          "password": "Umc!1234",
+          "nickname": "w6w0frl93b"
+        }
+      },
+      "response": {
+        "status": 201,
+        "statusText": "Created",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON201",
+          "message": "회원가입에 성공했습니다.",
+          "result": {
+            "memberId": 2,
+            "email": "week6-w0frl93-other@example.com",
+            "nickname": "w6w0frl93b"
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON201\",\"message\":\"회원가입에 성공했습니다.\",\"result\":{\"memberId\":2,\"email\":\"week6-w0frl93-other@example.com\",\"nickname\":\"w6w0frl93b\"}}"
+      },
+      "elapsedMs": 128,
+      "passed": true
+    },
+    {
+      "id": "09-email-check",
+      "title": "이메일 중복 조회",
+      "at": "2026-11-03T08:38:46.910Z",
+      "request": {
+        "method": "GET",
+        "path": "/members/email/week6-w0frl93%40example.com",
+        "headers": {},
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "이메일 중복 확인에 성공했습니다.",
+          "result": {
+            "email": "week6-w0frl93@example.com",
+            "exists": true
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"이메일 중복 확인에 성공했습니다.\",\"result\":{\"email\":\"week6-w0frl93@example.com\",\"exists\":true}}"
+      },
+      "elapsedMs": 6,
+      "passed": true
+    },
+    {
+      "id": "10-nickname-check",
+      "title": "닉네임 중복 조회",
+      "at": "2026-11-03T08:38:46.914Z",
+      "request": {
+        "method": "GET",
+        "path": "/members/nickname/w6w0frl93a",
+        "headers": {},
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "닉네임 중복 확인에 성공했습니다.",
+          "result": {
+            "nickname": "w6w0frl93a",
+            "exists": true
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"닉네임 중복 확인에 성공했습니다.\",\"result\":{\"nickname\":\"w6w0frl93a\",\"exists\":true}}"
+      },
+      "elapsedMs": 5,
+      "passed": true
+    },
+    {
+      "id": "11-invalid-score",
+      "title": "별점 범위 검증 실패",
+      "at": "2026-11-03T08:38:46.919Z",
+      "request": {
+        "method": "POST",
+        "path": "/members/1/ratings",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "movieId": 27205,
+          "score": 6,
+          "comment": "다시 보고 싶은 영화입니다."
+        }
+      },
+      "response": {
+        "status": 400,
+        "statusText": "Bad Request",
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "별점은 5점 이하여야 합니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"COMMON4001\",\"message\":\"별점은 5점 이하여야 합니다.\",\"result\":null}"
+      },
+      "elapsedMs": 5,
+      "passed": true
+    },
+    {
+      "id": "12-fractional-score",
+      "title": "소수 별점 검증 실패",
+      "at": "2026-11-03T08:38:46.922Z",
+      "request": {
+        "method": "POST",
+        "path": "/members/1/ratings",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "movieId": 27205,
+          "score": 3.5,
+          "comment": "다시 보고 싶은 영화입니다."
+        }
+      },
+      "response": {
+        "status": 400,
+        "statusText": "Bad Request",
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "별점은 정수여야 합니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"COMMON4001\",\"message\":\"별점은 정수여야 합니다.\",\"result\":null}"
+      },
+      "elapsedMs": 3,
+      "passed": true
+    },
+    {
+      "id": "13-comment-too-long",
+      "title": "후기 501자 검증 실패",
+      "at": "2026-11-03T08:38:46.925Z",
+      "request": {
+        "method": "POST",
+        "path": "/members/1/ratings",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "movieId": 27205,
+          "score": 5,
+          "comment": "가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가"
+        }
+      },
+      "response": {
+        "status": 400,
+        "statusText": "Bad Request",
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "후기는 500자 이하로 입력해주세요.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"COMMON4001\",\"message\":\"후기는 500자 이하로 입력해주세요.\",\"result\":null}"
+      },
+      "elapsedMs": 3,
+      "passed": true
+    },
+    {
+      "id": "14-invalid-movie",
+      "title": "영화 ID 검증 실패",
+      "at": "2026-11-03T08:38:46.928Z",
+      "request": {
+        "method": "POST",
+        "path": "/members/1/ratings",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "movieId": 0,
+          "score": 5,
+          "comment": "다시 보고 싶은 영화입니다."
+        }
+      },
+      "response": {
+        "status": 400,
+        "statusText": "Bad Request",
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "영화 ID는 양수여야 합니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"COMMON4001\",\"message\":\"영화 ID는 양수여야 합니다.\",\"result\":null}"
+      },
+      "elapsedMs": 3,
+      "passed": true
+    },
+    {
+      "id": "15-missing-member",
+      "title": "없는 회원의 평점 등록",
+      "at": "2026-11-03T08:38:46.934Z",
+      "request": {
+        "method": "POST",
+        "path": "/members/4294967295/ratings",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "movieId": 27205,
+          "score": 5,
+          "comment": "다시 보고 싶은 영화입니다."
+        }
+      },
+      "response": {
+        "status": 404,
+        "statusText": "Not Found",
+        "body": {
+          "isSuccess": false,
+          "code": "MEMBER4041",
+          "message": "존재하지 않는 유저입니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"MEMBER4041\",\"message\":\"존재하지 않는 유저입니다.\",\"result\":null}"
+      },
+      "elapsedMs": 6,
+      "passed": true
+    },
+    {
+      "id": "16-rating-created",
+      "title": "평점 등록 성공",
+      "at": "2026-11-03T08:38:46.951Z",
+      "request": {
+        "method": "POST",
+        "path": "/members/1/ratings",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "movieId": 27205,
+          "score": 5,
+          "comment": "다시 보고 싶은 영화입니다."
+        }
+      },
+      "response": {
+        "status": 201,
+        "statusText": "Created",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON201",
+          "message": "평점 등록에 성공했습니다.",
+          "result": 1
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON201\",\"message\":\"평점 등록에 성공했습니다.\",\"result\":1}"
+      },
+      "elapsedMs": 16,
+      "passed": true
+    },
+    {
+      "id": "17-duplicate-rating",
+      "title": "중복 평점 차단",
+      "at": "2026-11-03T08:38:46.957Z",
+      "request": {
+        "method": "POST",
+        "path": "/members/1/ratings",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "movieId": 27205,
+          "score": 5,
+          "comment": "다시 보고 싶은 영화입니다."
+        }
+      },
+      "response": {
+        "status": 409,
+        "statusText": "Conflict",
+        "body": {
+          "isSuccess": false,
+          "code": "RATING4091",
+          "message": "이미 이 영화에 평점을 남기셨습니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"RATING4091\",\"message\":\"이미 이 영화에 평점을 남기셨습니다.\",\"result\":null}"
+      },
+      "elapsedMs": 6,
+      "passed": true
+    },
+    {
+      "id": "18-rating-list",
+      "title": "등록 후 조회",
+      "at": "2026-11-03T08:38:46.973Z",
+      "request": {
+        "method": "GET",
+        "path": "/members/1/ratings",
+        "headers": {},
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "평점 조회에 성공했습니다.",
+          "result": [
+            {
+              "ratingId": 1,
+              "memberId": 1,
+              "movieId": 27205,
+              "score": 5,
+              "comment": "다시 보고 싶은 영화입니다."
+            }
+          ]
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"평점 조회에 성공했습니다.\",\"result\":[{\"ratingId\":1,\"memberId\":1,\"movieId\":27205,\"score\":5,\"comment\":\"다시 보고 싶은 영화입니다.\"}]}"
+      },
+      "elapsedMs": 6,
+      "passed": true
+    },
+    {
+      "id": "19-owner-forbidden-patch",
+      "title": "다른 회원의 수정 차단",
+      "at": "2026-11-03T08:38:46.979Z",
+      "request": {
+        "method": "PATCH",
+        "path": "/members/2/ratings/1",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "score": 1
+        }
+      },
+      "response": {
+        "status": 403,
+        "statusText": "Forbidden",
+        "body": {
+          "isSuccess": false,
+          "code": "RATING4031",
+          "message": "본인이 작성한 평점만 수정하거나 삭제할 수 있습니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"RATING4031\",\"message\":\"본인이 작성한 평점만 수정하거나 삭제할 수 있습니다.\",\"result\":null}"
+      },
+      "elapsedMs": 6,
+      "passed": true
+    },
+    {
+      "id": "20-owner-forbidden-delete",
+      "title": "다른 회원의 삭제 차단",
+      "at": "2026-11-03T08:38:46.983Z",
+      "request": {
+        "method": "DELETE",
+        "path": "/members/2/ratings/1",
+        "headers": {},
+        "body": null
+      },
+      "response": {
+        "status": 403,
+        "statusText": "Forbidden",
+        "body": {
+          "isSuccess": false,
+          "code": "RATING4031",
+          "message": "본인이 작성한 평점만 수정하거나 삭제할 수 있습니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"RATING4031\",\"message\":\"본인이 작성한 평점만 수정하거나 삭제할 수 있습니다.\",\"result\":null}"
+      },
+      "elapsedMs": 3,
+      "passed": true
+    },
+    {
+      "id": "21-missing-rating-patch",
+      "title": "없는 평점 수정",
+      "at": "2026-11-03T08:38:46.987Z",
+      "request": {
+        "method": "PATCH",
+        "path": "/members/1/ratings/4294967295",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "score": 4
+        }
+      },
+      "response": {
+        "status": 404,
+        "statusText": "Not Found",
+        "body": {
+          "isSuccess": false,
+          "code": "RATING4041",
+          "message": "존재하지 않는 평점입니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"RATING4041\",\"message\":\"존재하지 않는 평점입니다.\",\"result\":null}"
+      },
+      "elapsedMs": 5,
+      "passed": true
+    },
+    {
+      "id": "22-missing-rating-delete",
+      "title": "없는 평점 삭제",
+      "at": "2026-11-03T08:38:46.991Z",
+      "request": {
+        "method": "DELETE",
+        "path": "/members/1/ratings/4294967295",
+        "headers": {},
+        "body": null
+      },
+      "response": {
+        "status": 404,
+        "statusText": "Not Found",
+        "body": {
+          "isSuccess": false,
+          "code": "RATING4041",
+          "message": "존재하지 않는 평점입니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"RATING4041\",\"message\":\"존재하지 않는 평점입니다.\",\"result\":null}"
+      },
+      "elapsedMs": 3,
+      "passed": true
+    },
+    {
+      "id": "23-rating-updated",
+      "title": "평점 수정 성공",
+      "at": "2026-11-03T08:38:47.002Z",
+      "request": {
+        "method": "PATCH",
+        "path": "/members/1/ratings/1",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "score": 4,
+          "comment": "수정한 후기입니다."
+        }
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "평점 수정에 성공했습니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"평점 수정에 성공했습니다.\",\"result\":null}"
+      },
+      "elapsedMs": 11,
+      "passed": true
+    },
+    {
+      "id": "24-updated-list",
+      "title": "수정 후 조회",
+      "at": "2026-11-03T08:38:47.007Z",
+      "request": {
+        "method": "GET",
+        "path": "/members/1/ratings",
+        "headers": {},
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "평점 조회에 성공했습니다.",
+          "result": [
+            {
+              "ratingId": 1,
+              "memberId": 1,
+              "movieId": 27205,
+              "score": 4,
+              "comment": "수정한 후기입니다."
+            }
+          ]
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"평점 조회에 성공했습니다.\",\"result\":[{\"ratingId\":1,\"memberId\":1,\"movieId\":27205,\"score\":4,\"comment\":\"수정한 후기입니다.\"}]}"
+      },
+      "elapsedMs": 5,
+      "passed": true
+    },
+    {
+      "id": "25-rating-deleted",
+      "title": "평점 삭제 성공 - 본문 없음",
+      "at": "2026-11-03T08:38:47.016Z",
+      "request": {
+        "method": "DELETE",
+        "path": "/members/1/ratings/1",
+        "headers": {},
+        "body": null
+      },
+      "response": {
+        "status": 204,
+        "statusText": "No Content",
+        "body": null,
+        "raw": ""
+      },
+      "elapsedMs": 9,
+      "passed": true
+    },
+    {
+      "id": "26-deleted-list",
+      "title": "삭제 후 빈 목록 확인",
+      "at": "2026-11-03T08:38:47.021Z",
+      "request": {
+        "method": "GET",
+        "path": "/members/1/ratings",
+        "headers": {},
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "평점 조회에 성공했습니다.",
+          "result": []
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"평점 조회에 성공했습니다.\",\"result\":[]}"
+      },
+      "elapsedMs": 5,
+      "passed": true
+    },
+    {
+      "id": "27-repeat-delete",
+      "title": "삭제한 평점 재삭제",
+      "at": "2026-11-03T08:38:47.023Z",
+      "request": {
+        "method": "DELETE",
+        "path": "/members/1/ratings/1",
+        "headers": {},
+        "body": null
+      },
+      "response": {
+        "status": 404,
+        "statusText": "Not Found",
+        "body": {
+          "isSuccess": false,
+          "code": "RATING4041",
+          "message": "존재하지 않는 평점입니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"RATING4041\",\"message\":\"존재하지 않는 평점입니다.\",\"result\":null}"
+      },
+      "elapsedMs": 2,
+      "passed": true
+    },
+    {
+      "id": "28-race-1",
+      "title": "동시 회원가입 - UNIQUE 최종 보호",
+      "at": "2026-11-03T08:38:47.277Z",
+      "request": {
+        "method": "POST",
+        "path": "/members",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "race-w0frl93@example.com",
+          "password": "Umc!1234",
+          "nickname": "rw0frl930"
+        }
+      },
+      "response": {
+        "status": 201,
+        "statusText": "Created",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON201",
+          "message": "회원가입에 성공했습니다.",
+          "result": {
+            "memberId": 4,
+            "email": "race-w0frl93@example.com",
+            "nickname": "rw0frl930"
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON201\",\"message\":\"회원가입에 성공했습니다.\",\"result\":{\"memberId\":4,\"email\":\"race-w0frl93@example.com\",\"nickname\":\"rw0frl930\"}}"
+      },
+      "elapsedMs": 132,
+      "passed": true
+    },
+    {
+      "id": "28-race-2",
+      "title": "동시 회원가입 - UNIQUE 최종 보호",
+      "at": "2026-11-03T08:38:47.281Z",
+      "request": {
+        "method": "POST",
+        "path": "/members",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "race-w0frl93@example.com",
+          "password": "Umc!1234",
+          "nickname": "rw0frl931"
+        }
+      },
+      "response": {
+        "status": 409,
+        "statusText": "Conflict",
+        "body": {
+          "isSuccess": false,
+          "code": "MEMBER4091",
+          "message": "이미 사용 중인 이메일입니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"MEMBER4091\",\"message\":\"이미 사용 중인 이메일입니다.\",\"result\":null}"
+      },
+      "elapsedMs": 135,
+      "passed": true
+    }
+  ],
+  "database": {
+    "ratingRowsAfterDuplicate": 1,
+    "password": {
+      "algorithm": "bcrypt",
+      "length": 60,
+      "rounds": 10,
+      "differsFromPlaintext": true,
+      "matchesPassword": true,
+      "prefix": "$2b$10$"
+    },
+    "directUniqueViolation": {
+      "code": "ER_DUP_ENTRY",
+      "errno": 1062,
+      "sqlMessage": "Duplicate entry 'week6-w0frl93@example.com' for key 'member.uq_member_email'"
+    }
+  },
+  "memberId": 1,
+  "otherMemberId": 2,
+  "ratingId": 1,
+  "concurrency": {
+    "statuses": [
+      201,
+      409
+    ],
+    "storedRows": 1,
+    "responses": [
+      {
+        "isSuccess": true,
+        "code": "COMMON201",
+        "message": "회원가입에 성공했습니다.",
+        "result": {
+          "memberId": 4,
+          "email": "race-w0frl93@example.com",
+          "nickname": "rw0frl930"
+        }
+      },
+      {
+        "isSuccess": false,
+        "code": "MEMBER4091",
+        "message": "이미 사용 중인 이메일입니다.",
+        "result": null
+      }
+    ]
+  },
+  "passed": true,
+  "requestCount": 29,
+  "passedCount": 29
+}

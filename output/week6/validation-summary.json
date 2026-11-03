@@ -1,0 +1,12 @@
+{
+  "verifiedOn": "2026-11-03",
+  "timezone": "Asia/Seoul",
+  "build": { "command": "npm run build", "exitCode": 0 },
+  "unitTests": { "command": "npm test", "passed": 1, "failed": 0 },
+  "e2eTests": { "command": "npm run test:e2e", "files": 4, "passed": 106, "failed": 0, "newMovieTests": 55, "database": "mock" },
+  "lint": { "command": "npm run lint", "exitCode": 0, "preexistingWarnings": 2, "warningFile": "test/books.db-verification.mjs" },
+  "liveHttp": { "command": "npm run week6:verify", "passed": 29, "failed": 0, "database": "real local MySQL", "details": "evidence.json" },
+  "pathRegression": { "compiledServer": true, "rejectedVariants": 4, "expectedStatus": 400, "details": "troubleshooting-after.json" },
+  "pdf": { "pages": 8, "renderedAndVisuallyReviewed": true },
+  "screenshots": { "count": 13, "source": "Archived real HTTP request/response records displayed in local headless browser" }
+}

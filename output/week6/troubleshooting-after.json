@@ -1,0 +1,53 @@
+{
+  "phase": "after-fix",
+  "results": [
+    {
+      "request": {
+        "url": "http://localhost:3000/members/1e0/ratings"
+      },
+      "status": 400,
+      "body": {
+        "isSuccess": false,
+        "code": "COMMON4001",
+        "message": "ID는 양의 안전한 정수여야 합니다.",
+        "result": null
+      }
+    },
+    {
+      "request": {
+        "url": "http://localhost:3000/members/+1/ratings"
+      },
+      "status": 400,
+      "body": {
+        "isSuccess": false,
+        "code": "COMMON4001",
+        "message": "ID는 양의 안전한 정수여야 합니다.",
+        "result": null
+      }
+    },
+    {
+      "request": {
+        "url": "http://localhost:3000/members/0x1/ratings"
+      },
+      "status": 400,
+      "body": {
+        "isSuccess": false,
+        "code": "COMMON4001",
+        "message": "ID는 양의 안전한 정수여야 합니다.",
+        "result": null
+      }
+    },
+    {
+      "request": {
+        "url": "http://localhost:3000/members/1/ratings/1e0"
+      },
+      "status": 400,
+      "body": {
+        "isSuccess": false,
+        "code": "COMMON4001",
+        "message": "ID는 양의 안전한 정수여야 합니다.",
+        "result": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,1000 @@
+{
+  "info": {
+    "_postman_id": "b82d7ec8-3cd2-4bf3-82e9-d1e2d0473349",
+    "name": "UMC 6주차 - 회원가입과 영화 평점",
+    "description": "NestJS Standard Mission 재현. Environment를 선택하고 순서대로 실행합니다. 첫 요청은 새 runTag를 생성하고 ID를 저장합니다. 로컬 DB에 데모 회원 2명을 생성하며, 마지막 단계에서 데모 평점을 삭제합니다. 4294967295는 없는 회원/평점 확인용 ID로 사용합니다. 해당 ID가 실제 존재하는 데이터셋에서는 없는 ID로 바꾸세요.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 회원가입 성공 및 memberId 저장",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const tag = pm.variables.replaceIn(\"{{$randomUUID}}\").replace(/-/g, \"\").slice(0, 8);",
+              "pm.environment.set(\"runTag\", tag);",
+              "pm.environment.unset(\"memberId\");",
+              "pm.environment.unset(\"otherMemberId\");",
+              "pm.environment.unset(\"ratingId\");"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(true); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"회원 응답 DTO\", function () { pm.expect(Object.keys(data.result).sort()).to.eql([\"email\", \"memberId\", \"nickname\"]); pm.expect(data.result.memberId).to.be.a(\"number\"); });",
+              "if (pm.response.code === 201) pm.environment.set(\"memberId\", data.result.memberId);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members",
+        "description": "01 회원가입 성공 및 memberId 저장",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"week6.{{runTag}}@example.com\",\n  \"password\": \"Umc!1234\",\n  \"nickname\": \"u{{runTag}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "02 이메일 형식 검증 실패",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"COMMON4001\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members",
+        "description": "02 이메일 형식 검증 실패",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"invalid-email\",\n  \"password\": \"Umc!1234\",\n  \"nickname\": \"u{{runTag}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "03 닉네임 길이 검증 실패",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"COMMON4001\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members",
+        "description": "03 닉네임 길이 검증 실패",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"week6.{{runTag}}@example.com\",\n  \"password\": \"Umc!1234\",\n  \"nickname\": \"x\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "04 비밀번호 조합 검증 실패",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"COMMON4001\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members",
+        "description": "04 비밀번호 조합 검증 실패",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"week6.{{runTag}}@example.com\",\n  \"password\": \"weakpass\",\n  \"nickname\": \"u{{runTag}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "05 이메일 중복",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 409\", function () { pm.response.to.have.status(409); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"MEMBER4091\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members",
+        "description": "05 이메일 중복",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"week6.{{runTag}}@example.com\",\n  \"password\": \"Umc!1234\",\n  \"nickname\": \"e{{runTag}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "06 닉네임 중복",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 409\", function () { pm.response.to.have.status(409); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"MEMBER4092\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members",
+        "description": "06 닉네임 중복",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"week6.dup.{{runTag}}@example.com\",\n  \"password\": \"Umc!1234\",\n  \"nickname\": \"u{{runTag}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "07 다른 회원 가입 및 otherMemberId 저장",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(true); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "if (pm.response.code === 201) pm.environment.set(\"otherMemberId\", data.result.memberId);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members",
+        "description": "07 다른 회원 가입 및 otherMemberId 저장",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"week6.other.{{runTag}}@example.com\",\n  \"password\": \"Umc!1234\",\n  \"nickname\": \"v{{runTag}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "08 이메일 중복 확인",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(true); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"등록한 이메일 존재\", function () { pm.expect(data.result.exists).to.eql(true); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/members/email/week6.{{runTag}}%40example.com",
+        "description": "08 이메일 중복 확인"
+      }
+    },
+    {
+      "name": "09 닉네임 중복 확인",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(true); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"등록한 닉네임 존재\", function () { pm.expect(data.result.exists).to.eql(true); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/members/nickname/u{{runTag}}",
+        "description": "09 닉네임 중복 확인"
+      }
+    },
+    {
+      "name": "10 평점 등록 및 ratingId 저장",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(true); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"생성된 평점 ID\", function () { pm.expect(data.result).to.be.a(\"number\"); pm.expect(data.result).to.be.above(0); });",
+              "if (pm.response.code === 201) pm.environment.set(\"ratingId\", data.result);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings",
+        "description": "10 평점 등록 및 ratingId 저장",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"movieId\": 27205,\n  \"score\": 5,\n  \"comment\": \"다시 보고 싶은 영화입니다.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "11 중복 평점 차단",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 409\", function () { pm.response.to.have.status(409); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"RATING4091\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings",
+        "description": "11 중복 평점 차단",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"movieId\": 27205,\n  \"score\": 4\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "12 잘못된 별점 범위",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"COMMON4001\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings",
+        "description": "12 잘못된 별점 범위",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"movieId\": 27206,\n  \"score\": 6\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "13 소수 별점 거절",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"COMMON4001\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings",
+        "description": "13 소수 별점 거절",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"movieId\": 27206,\n  \"score\": 4.5\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "14 문자열 별점 거절",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"COMMON4001\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings",
+        "description": "14 문자열 별점 거절",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"movieId\": 27206,\n  \"score\": \"5\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "15 501자 후기 거절",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"COMMON4001\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings",
+        "description": "15 501자 후기 거절",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"movieId\": 27206,\n  \"score\": 5,\n  \"comment\": \"가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "16 없는 회원의 평점 등록",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 404\", function () { pm.response.to.have.status(404); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"MEMBER4041\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/4294967295/ratings",
+        "description": "16 없는 회원의 평점 등록",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"movieId\": 27205,\n  \"score\": 5\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "17 다른 회원의 수정 거절",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 403\", function () { pm.response.to.have.status(403); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"RATING4031\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/{{otherMemberId}}/ratings/{{ratingId}}",
+        "description": "17 다른 회원의 수정 거절",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"score\": 1,\n  \"comment\": \"권한 없는 수정\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "18 다른 회원의 삭제 거절",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 403\", function () { pm.response.to.have.status(403); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"RATING4031\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/members/{{otherMemberId}}/ratings/{{ratingId}}",
+        "description": "18 다른 회원의 삭제 거절"
+      }
+    },
+    {
+      "name": "19 없는 평점 수정",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 404\", function () { pm.response.to.have.status(404); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"RATING4041\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings/4294967295",
+        "description": "19 없는 평점 수정",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"score\": 3\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "20 없는 평점 삭제",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 404\", function () { pm.response.to.have.status(404); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"RATING4041\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings/4294967295",
+        "description": "20 없는 평점 삭제"
+      }
+    },
+    {
+      "name": "21 수정 요청의 score 필수 확인",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"COMMON4001\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings/{{ratingId}}",
+        "description": "21 수정 요청의 score 필수 확인",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"comment\": \"별점 누락\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "22 허용하지 않은 수정 필드 거절",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"COMMON4001\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings/{{ratingId}}",
+        "description": "22 허용하지 않은 수정 필드 거절",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"score\": 4,\n  \"movieId\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "23 본인 평점 수정 성공",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(true); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"수정 응답 result null\", function () { pm.expect(data.result).to.eql(null); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings/{{ratingId}}",
+        "description": "23 본인 평점 수정 성공",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"score\": 4,\n  \"comment\": \"다시 본 뒤 별점을 조정했습니다.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "24 조회로 수정 결과 확인",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(true); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"목록 응답\", function () { pm.expect(data.result).to.be.an(\"array\"); });",
+              "pm.test(\"수정 값 반영 및 중복 없음\", function () { const matches = data.result.filter(r => String(r.ratingId) === String(pm.environment.get(\"ratingId\"))); pm.expect(matches).to.have.lengthOf(1); pm.expect(matches[0].score).to.eql(4); pm.expect(matches[0].comment).to.eql(\"다시 본 뒤 별점을 조정했습니다.\"); const sameMovie = data.result.filter(r => r.movieId === 27205); pm.expect(sameMovie).to.have.lengthOf(1); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings",
+        "description": "24 조회로 수정 결과 확인"
+      }
+    },
+    {
+      "name": "25 본인 평점 삭제 성공",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 204\", function () { pm.response.to.have.status(204); });",
+              "pm.test(\"204 응답 본문 없음\", function () { pm.expect(pm.response.text()).to.eql(\"\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings/{{ratingId}}",
+        "description": "25 본인 평점 삭제 성공"
+      }
+    },
+    {
+      "name": "26 재조회로 삭제 확인",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(true); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"삭제된 평점이 목록에서 제외\", function () { pm.expect(data.result).to.be.an(\"array\"); pm.expect(data.result.some(r => String(r.ratingId) === String(pm.environment.get(\"ratingId\")))).to.eql(false); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings",
+        "description": "26 재조회로 삭제 확인"
+      }
+    },
+    {
+      "name": "27 삭제한 평점 재삭제 404",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 404\", function () { pm.response.to.have.status(404); });",
+              "const data = pm.response.json();",
+              "pm.test(\"공통 응답 필드\", function () { pm.expect(Object.keys(data).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(data.message).to.be.a(\"string\"); });",
+              "pm.test(\"성공/실패 구분\", function () { pm.expect(data.isSuccess).to.eql(false); });",
+              "pm.test(\"비밀번호 응답 제외\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result는 null\", function () { pm.expect(data.result).to.eql(null); });",
+              "pm.test(\"업무 오류 코드\", function () { pm.expect(data.code).to.eql(\"RATING4041\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/members/{{memberId}}/ratings/{{ratingId}}",
+        "description": "27 삭제한 평점 재삭제 404"
+      }
+    }
+  ]
+}
