@@ -38,7 +38,7 @@ DB가 없다면 먼저 로컬 MySQL에 DB를 생성하고 DB_NAME에 지정하�
 
 실제 비밀번호가 있는 .env와 node_modules는 포함하지 않았습니다.
 스터디 모임 사진은 실제 촬영 사진을 별도로 첨부하세요.
-GitHub 저장소: https://github.com/terikeipapi/umc-study
+GitHub 저장소: https://github.com/terikeipapi/umc-backend
 UMC 제출 사이트 업로드는 별도로 진행하세요.
 ''')
     for path in sorted(files):

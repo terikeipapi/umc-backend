@@ -59,7 +59,7 @@ DB 조회로 비밀번호가 평문과 다른 60자 bcrypt 해시이며 cost가 
 
 ## 핵심 코드 링크
 
-다음 링크는 현재 프로젝트의 소스 파일을 가리킨다. [GitHub 저장소](https://github.com/terikeipapi/umc-study)의 같은 경로에서도 코드와 제출 자료를 확인할 수 있다.
+다음 링크는 현재 프로젝트의 소스 파일을 가리킨다. [GitHub 저장소](https://github.com/terikeipapi/umc-backend)의 같은 경로에서도 코드와 제출 자료를 확인할 수 있다.
 
 - [영화 평점 모듈](../../src/movie/movie.module.ts)
 - [회원가입과 중복 확인](../../src/movie/member.controller.ts)
@@ -79,6 +79,6 @@ DB 조회로 비밀번호가 평문과 다른 60자 bcrypt 해시이며 cost가 
 
 서버 실행 후 `npm run week6:verify`로 실제 HTTP 요청과 DB 확인을 다시 수행할 수 있다. 이 명령은 새 데모 회원을 남기고 `evidence.json`을 갱신한다. 이어 `npm run week6:report`는 갱신한 기록으로 HTML을 만든다. 기존 인증 이미지와 PDF는 제공 시점의 실행 기록이므로 원본 패키지를 보관하면 된다.
 
-워크북 제출 페이지에는 이 기록의 내용, API 명세, 핵심 코드 링크와 인증 이미지를 함께 첨부하면 된다. Notion에는 캡처 이미지를 직접 첨부하고 코드 링크는 GitHub 파일 주소로 연결한다. [API 명세 주소](https://github.com/terikeipapi/umc-study/blob/main/docs/week6/API.md), [핵심 코드 주소](https://github.com/terikeipapi/umc-study/tree/main/src/movie), [인증 이미지 주소](https://github.com/terikeipapi/umc-study/tree/main/output/week6/screenshots)를 사용할 수 있다. UMC 제출 사이트 업로드는 별도로 진행한다.
+워크북 제출 페이지에는 이 기록의 내용, API 명세, 핵심 코드 링크와 인증 이미지를 함께 첨부하면 된다. Notion에는 캡처 이미지를 직접 첨부하고 코드 링크는 GitHub 파일 주소로 연결한다. [API 명세 주소](https://github.com/terikeipapi/umc-backend/blob/main/docs/week6/API.md), [핵심 코드 주소](https://github.com/terikeipapi/umc-backend/tree/main/src/movie), [인증 이미지 주소](https://github.com/terikeipapi/umc-backend/tree/main/output/week6/screenshots)를 사용할 수 있다. UMC 제출 사이트 업로드는 별도로 진행한다.
 
 실제 스터디 모임 사진은 API 응답 캡처와 다른 자료다. 모임 사진이 필요한 경우 본인이 촬영한 사진을 별도로 첨부한다.
