@@ -1,0 +1,1086 @@
+{
+  "info": {
+    "_postman_id": "38074742-cc8b-4c06-8e46-11c303a7f5e9",
+    "name": "UMC 7주차 - 로그인한 사용자를 구분하기",
+    "description": "본문 실습 1~6과 필수 9단계 시나리오. 01~11 요청이 PDF 62쪽의 9단계(가입/로그인은 A,B각각)를 순서대로 수행합니다. 12~23은 내정보/변조/로그인실패/입력검증 추가실습입니다. 처음 요청이 매번 새 예시회원 값을 만들고 토큰과 ID를 저장합니다. 실제 JWT 비밀키나 DB비밀번호를 넣지 마세요. 토큰은 실행중 환경값에만 저장하며 제공 Environment파일은 비어있습니다. 없는 ratingId=99999가 실제존재하면 테스트용 DB에서 없는값으로바꾸세요.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 준비 - 회원 A 가입",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "const tag = pm.variables.replaceIn(\"{{$randomUUID}}\").replace(/-/g, \"\").slice(0, 8);",
+              "pm.environment.set(\"runTag\", tag);",
+              "pm.environment.set(\"emailA\", \"postman7-\" + tag + \"-a@example.com\");",
+              "pm.environment.set(\"emailB\", \"postman7-\" + tag + \"-b@example.com\");",
+              "pm.environment.set(\"nicknameA\", \"a\" + tag);",
+              "pm.environment.set(\"nicknameB\", \"b\" + tag);",
+              "pm.environment.set(\"updatedNickname\", \"n\" + tag);",
+              "[\"memberIdA\",\"memberIdB\",\"ratingId\",\"tokenA\",\"tokenB\",\"tamperedToken\",\"createdAt\",\"unknownFailure\"].forEach(function (key) { pm.environment.unset(key); });",
+              "})();"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(true); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code COMMON201\", function () { pm.expect(responseData.code).to.eql(\"COMMON201\"); });",
+              "if(pm.response.code===201) pm.environment.set(\"memberIdA\", responseData.result.memberId);",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members",
+        "description": "01 준비 - 회원 A 가입",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{emailA}}\",\n  \"password\": \"Umc!1234\",\n  \"nickname\": \"{{nicknameA}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "02 준비 - 회원 B 가입",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(true); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code COMMON201\", function () { pm.expect(responseData.code).to.eql(\"COMMON201\"); });",
+              "if(pm.response.code===201) pm.environment.set(\"memberIdB\", responseData.result.memberId);",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members",
+        "description": "02 준비 - 회원 B 가입",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{emailB}}\",\n  \"password\": \"Umc!1234\",\n  \"nickname\": \"{{nicknameB}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "03 로그인 - 회원 A accessToken",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(true); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code COMMON200\", function () { pm.expect(responseData.code).to.eql(\"COMMON200\"); });",
+              "pm.test(\"로그인 응답과 토큰\", function () { pm.expect(Object.keys(responseData.result).sort()).to.eql([\"accessToken\",\"nickname\"]); pm.expect(responseData.result.accessToken.split(\".\")).to.have.length(3); });",
+              "if(pm.response.code===200) pm.environment.set(\"tokenA\", responseData.result.accessToken);",
+              "if(pm.response.code===200) { const parts=responseData.result.accessToken.split(\".\"); parts[1]=(parts[1][0]===\"e\"?\"f\":\"e\")+parts[1].slice(1); pm.environment.set(\"tamperedToken\", parts.join(\".\")); }",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/login",
+        "description": "03 로그인 - 회원 A accessToken",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{emailA}}\",\n  \"password\": \"Umc!1234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "04 로그인 - 회원 B accessToken",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(true); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code COMMON200\", function () { pm.expect(responseData.code).to.eql(\"COMMON200\"); });",
+              "pm.test(\"로그인 응답과 토큰\", function () { pm.expect(Object.keys(responseData.result).sort()).to.eql([\"accessToken\",\"nickname\"]); pm.expect(responseData.result.accessToken.split(\".\")).to.have.length(3); });",
+              "if(pm.response.code===200) pm.environment.set(\"tokenB\", responseData.result.accessToken);",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/login",
+        "description": "04 로그인 - 회원 B accessToken",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{emailB}}\",\n  \"password\": \"Umc!1234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "05 등록 - A 본인 토큰 201",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(true); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code COMMON201\", function () { pm.expect(responseData.code).to.eql(\"COMMON201\"); });",
+              "pm.test(\"요청 body에 memberId 없음\", function () { const body=JSON.parse(pm.variables.replaceIn(pm.request.body.raw)); pm.expect(body).not.to.have.property(\"memberId\"); });",
+              "pm.test(\"작성자는 A\", function () { pm.expect(responseData.result.memberId).to.eql(Number(pm.environment.get(\"memberIdA\"))); });",
+              "if(pm.response.code===201) pm.environment.set(\"ratingId\",responseData.result.ratingId);",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tokenA}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/ratings",
+        "description": "05 등록 - A 본인 토큰 201",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"movieId\": 27205,\n  \"score\": 5,\n  \"comment\": \"토큰에서 작성자를 확인하는 Postman 실습\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "06 중복 등록 - 409",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 409\", function () { pm.response.to.have.status(409); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(false); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code RATING409_1\", function () { pm.expect(responseData.code).to.eql(\"RATING409_1\"); });",
+              "pm.test(\"실패 result null\", function () { pm.expect(responseData.result).to.eql(null); });",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tokenA}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/ratings",
+        "description": "06 중복 등록 - 409",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"movieId\": 27205,\n  \"score\": 5,\n  \"comment\": \"토큰에서 작성자를 확인하는 Postman 실습\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "07 본인 수정 - A 200",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(true); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code COMMON200\", function () { pm.expect(responseData.code).to.eql(\"COMMON200\"); });",
+              "pm.test(\"수정 반영\", function () { pm.expect(responseData.result.score).to.eql(4); });",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tokenA}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/ratings/{{ratingId}}",
+        "description": "07 본인 수정 - A 200",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"score\": 4,\n  \"comment\": \"본인이 수정한 후기\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "08 남의 것 수정 - B 403",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 403\", function () { pm.response.to.have.status(403); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(false); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code RATING403_1\", function () { pm.expect(responseData.code).to.eql(\"RATING403_1\"); });",
+              "pm.test(\"실패 result null\", function () { pm.expect(responseData.result).to.eql(null); });",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tokenB}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/ratings/{{ratingId}}",
+        "description": "08 남의 것 수정 - B 403",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"score\": 1,\n  \"comment\": \"다른 회원의 수정 시도\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "09 토큰 없이 같은 수정 - 401",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 401\", function () { pm.response.to.have.status(401); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(false); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code AUTH401_2\", function () { pm.expect(responseData.code).to.eql(\"AUTH401_2\"); });",
+              "pm.test(\"실패 result null\", function () { pm.expect(responseData.result).to.eql(null); });",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/ratings/{{ratingId}}",
+        "description": "09 토큰 없이 같은 수정 - 401",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"score\": 1,\n  \"comment\": \"토큰 없는 수정 시도\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "10 없는 평점 삭제 - 404",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 404\", function () { pm.response.to.have.status(404); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(false); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code RATING404_1\", function () { pm.expect(responseData.code).to.eql(\"RATING404_1\"); });",
+              "pm.test(\"실패 result null\", function () { pm.expect(responseData.result).to.eql(null); });",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tokenA}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [],
+        "url": "{{baseUrl}}/ratings/99999",
+        "description": "10 없는 평점 삭제 - 404"
+      }
+    },
+    {
+      "name": "11 본인 삭제 - A 200 result null",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(true); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code COMMON200\", function () { pm.expect(responseData.code).to.eql(\"COMMON200\"); });",
+              "pm.test(\"삭제 result null\",function(){pm.expect(responseData.result).to.eql(null);});",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tokenA}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [],
+        "url": "{{baseUrl}}/ratings/{{ratingId}}",
+        "description": "11 본인 삭제 - A 200 result null"
+      }
+    },
+    {
+      "name": "12 실습 내 정보 조회",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(true); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code COMMON200\", function () { pm.expect(responseData.code).to.eql(\"COMMON200\"); });",
+              "pm.test(\"내 정보 DTO\",function(){pm.expect(Object.keys(responseData.result).sort()).to.eql([\"createdAt\",\"email\",\"nickname\"]);pm.expect(responseData.result.email).to.eql(pm.environment.get(\"emailA\"));});",
+              "if(pm.response.code===200) pm.environment.set(\"createdAt\",responseData.result.createdAt);",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tokenA}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [],
+        "url": "{{baseUrl}}/members/me",
+        "description": "12 실습 내 정보 조회"
+      }
+    },
+    {
+      "name": "13 필수 캡처 토큰 없이 GET me 401",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 401\", function () { pm.response.to.have.status(401); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(false); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code AUTH401_2\", function () { pm.expect(responseData.code).to.eql(\"AUTH401_2\"); });",
+              "pm.test(\"실패 result null\", function () { pm.expect(responseData.result).to.eql(null); });",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [],
+        "url": "{{baseUrl}}/members/me",
+        "description": "13 필수 캡처 토큰 없이 GET me 401"
+      }
+    },
+    {
+      "name": "14 payload 한 글자 변조 401",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 401\", function () { pm.response.to.have.status(401); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(false); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code AUTH401_3\", function () { pm.expect(responseData.code).to.eql(\"AUTH401_3\"); });",
+              "pm.test(\"실패 result null\", function () { pm.expect(responseData.result).to.eql(null); });",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tamperedToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [],
+        "url": "{{baseUrl}}/members/me",
+        "description": "14 payload 한 글자 변조 401"
+      }
+    },
+    {
+      "name": "15 없는 이메일 로그인 401",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 401\", function () { pm.response.to.have.status(401); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(false); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code AUTH401_1\", function () { pm.expect(responseData.code).to.eql(\"AUTH401_1\"); });",
+              "pm.test(\"실패 result null\", function () { pm.expect(responseData.result).to.eql(null); });",
+              "pm.environment.set(\"unknownFailure\",JSON.stringify(responseData));",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/login",
+        "description": "15 없는 이메일 로그인 401",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"missing-{{runTag}}@example.com\",\n  \"password\": \"Umc!1234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "16 틀린 비밀번호 로그인 401",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 401\", function () { pm.response.to.have.status(401); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(false); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code AUTH401_1\", function () { pm.expect(responseData.code).to.eql(\"AUTH401_1\"); });",
+              "pm.test(\"실패 result null\", function () { pm.expect(responseData.result).to.eql(null); });",
+              "pm.test(\"로그인 실패 응답 동일\",function(){pm.expect(responseData).to.eql(JSON.parse(pm.environment.get(\"unknownFailure\")));});",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/login",
+        "description": "16 틀린 비밀번호 로그인 401",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{emailA}}\",\n  \"password\": \"Wrong!1234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "17 내 닉네임 수정",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(true); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code COMMON200\", function () { pm.expect(responseData.code).to.eql(\"COMMON200\"); });",
+              "pm.test(\"닉네임 변경과 가입 시각 유지\",function(){pm.expect(responseData.result.nickname).to.eql(pm.environment.get(\"updatedNickname\"));pm.expect(responseData.result.createdAt).to.eql(pm.environment.get(\"createdAt\"));});",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tokenA}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/me",
+        "description": "17 내 닉네임 수정",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nickname\": \"{{updatedNickname}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "18 내 정보 재조회",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(true); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code COMMON200\", function () { pm.expect(responseData.code).to.eql(\"COMMON200\"); });",
+              "pm.test(\"변경값 재조회\",function(){pm.expect(responseData.result.nickname).to.eql(pm.environment.get(\"updatedNickname\"));});",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tokenA}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [],
+        "url": "{{baseUrl}}/members/me",
+        "description": "18 내 정보 재조회"
+      }
+    },
+    {
+      "name": "19 타인 닉네임 중복 409",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 409\", function () { pm.response.to.have.status(409); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(false); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code MEMBER409_1\", function () { pm.expect(responseData.code).to.eql(\"MEMBER409_1\"); });",
+              "pm.test(\"실패 result null\", function () { pm.expect(responseData.result).to.eql(null); });",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tokenA}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/me",
+        "description": "19 타인 닉네임 중복 409",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nickname\": \"{{nicknameB}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "20 짧은 닉네임 검증 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(false); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code COMMON4001\", function () { pm.expect(responseData.code).to.eql(\"COMMON4001\"); });",
+              "pm.test(\"실패 result null\", function () { pm.expect(responseData.result).to.eql(null); });",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tokenA}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/me",
+        "description": "20 짧은 닉네임 검증 400",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nickname\": \"가\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "21 요청의 memberId 주입 차단",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(false); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code COMMON4001\", function () { pm.expect(responseData.code).to.eql(\"COMMON4001\"); });",
+              "pm.test(\"실패 result null\", function () { pm.expect(responseData.result).to.eql(null); });",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tokenA}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/ratings",
+        "description": "21 요청의 memberId 주입 차단",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"movieId\": 27205,\n  \"score\": 5,\n  \"comment\": \"토큰에서 작성자를 확인하는 Postman 실습\",\n  \"memberId\": 123\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "22 기존 memberId 등록 경로 제거",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 404\", function () { pm.response.to.have.status(404); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(false); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"실패 result null\", function () { pm.expect(responseData.result).to.eql(null); });",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tokenA}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/members/{{memberIdA}}/ratings",
+        "description": "22 기존 memberId 등록 경로 제거",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"movieId\": 27205,\n  \"score\": 5,\n  \"comment\": \"토큰에서 작성자를 확인하는 Postman 실습\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "23 공개 회원별 평점 조회 유지",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(function () {",
+              "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+              "const responseData = pm.response.json();",
+              "pm.test(\"공통 응답 형식\", function () { pm.expect(Object.keys(responseData).sort()).to.eql([\"code\", \"isSuccess\", \"message\", \"result\"]); pm.expect(responseData.message).to.be.a(\"string\"); });",
+              "pm.test(\"isSuccess\", function () { pm.expect(responseData.isSuccess).to.eql(true); });",
+              "pm.test(\"응답에 비밀번호 없음\", function () { pm.expect(pm.response.text()).not.to.match(/\"password\"\\s*:/); });",
+              "pm.test(\"응답 code COMMON200\", function () { pm.expect(responseData.code).to.eql(\"COMMON200\"); });",
+              "pm.test(\"삭제 후 빈 목록\",function(){pm.expect(responseData.result).to.eql([]);});",
+              "})();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "auth": {
+          "type": "noauth"
+        },
+        "header": [],
+        "url": "{{baseUrl}}/members/{{memberIdA}}/ratings",
+        "description": "23 공개 회원별 평점 조회 유지"
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "newman": {
+    "requests": {
+      "total": 23,
+      "pending": 0,
+      "failed": 0
+    },
+    "assertions": {
+      "total": 137,
+      "pending": 0,
+      "failed": 0
+    },
+    "failures": 0,
+    "started": 1794306256578,
+    "completed": 1794306259518,
+    "tokensExpired": true
+  },
+  "http": {
+    "passed": true,
+    "requests": 28,
+    "passedCount": 28,
+    "runAtSeoul": "2026-11-10 19:26:44",
+    "tokensExpired": true
+  },
+  "automated": {
+    "unit": 1,
+    "e2e": 163,
+    "build": "passed"
+  }
+}

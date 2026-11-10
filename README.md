@@ -1,5 +1,29 @@
 # UMC 백엔드 스터디
 
+## 7주차: 로그인한 사용자를 구분하기
+
+NestJS와 MySQL로 JWT 로그인, 인증 Guard, 내 정보 조회·닉네임 수정, 토큰 기반 평점 등록·수정·삭제를 구현했습니다. 현재 평점 쓰기는 `/ratings`와 `/ratings/:ratingId`를 사용하며, 삭제 성공은 200과 `result: null`을 반환합니다. 공개 회원별 평점 조회는 유지합니다.
+
+- [실습 인증 문구·필수 미션 기록·수행 과정](docs/week7/SUBMISSION.md)
+- [7주차 API 명세](docs/week7/API.md), [실제 요청·응답 HTML](output/week7/report.html)
+- [필수 응답 이미지 4장](output/week7/captures/), [HTTP·DB 원본](output/week7/evidence.json)
+- [Postman Collection](docs/week7/week7.postman_collection.json), [Environment](docs/week7/week7.postman_environment.json), [Newman 실행 결과](output/week7/newman-results.json)
+- [트러블슈팅 기록](docs/week7/TROUBLESHOOTING.md)
+- [7주차 전체 제출 패키지 ZIP](output/week7-submission.zip)
+
+검증 결과: 단위 테스트 1개, E2E 163개, 실제 HTTP 28건, Newman 요청 23개·assertion 137개 및 빌드 통과. 이미지 4장은 실제 HTTP 기록을 이미지로 만든 자료이며 Postman UI 캡처는 아닙니다. jwt.io 직접 조작은 브라우저 접근 제한으로 로컬 디코딩으로 대체했습니다.
+
+`.env.example`의 DB 설정과 비공개 `JWT_SECRET`을 준비한 다음 실행합니다. 키는 32바이트 이상이며 `.env`는 Git에 포함하지 않습니다.
+
+```bash
+npm install
+npm run week7:db
+npm run build
+npm run start:prod
+```
+
+기존 회원·평점 데이터는 보존합니다. 6주차에 가입 시각을 저장하지 않았으므로 기존 회원에 추가된 `created_at`은 마이그레이션 시각입니다. 신규 회원은 UTC 가입 시각을 저장합니다. 아래 6주차 자료는 당시 경로·응답으로 수행한 과거 기록입니다.
+
 ## 6주차: 회원가입과 영화 평점
 
 NestJS와 MySQL로 회원가입, 평점 등록·수정·삭제, 입력 검증, 공통 오류 응답을 구현했습니다.

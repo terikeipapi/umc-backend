@@ -1,0 +1,1010 @@
+{
+  "runAt": "2026-11-10T10:26:44.949Z",
+  "runAtSeoul": "2026-11-10 19:26:44",
+  "baseUrl": "http://127.0.0.1:3007",
+  "source": "Actual HTTP requests to the compiled local NestJS server and SELECT queries against local MySQL.",
+  "runTag": "wajpetx",
+  "fixtureNotice": "All emails, nicknames, and passwords in this report belong to disposable local demonstration members. No JWT signing secret or database password is recorded.",
+  "requests": [
+    {
+      "id": "01-signup-a",
+      "title": "준비: 회원 A 가입",
+      "at": "2026-11-10T10:26:45.011Z",
+      "scenarioStep": 1,
+      "note": "",
+      "request": {
+        "method": "POST",
+        "path": "/members",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "week7-wajpetx-a@example.com",
+          "password": "Umc!1234",
+          "nickname": "w7wajpetxa"
+        }
+      },
+      "response": {
+        "status": 201,
+        "statusText": "Created",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON201",
+          "message": "회원가입에 성공했습니다.",
+          "result": {
+            "memberId": 12,
+            "email": "week7-wajpetx-a@example.com",
+            "nickname": "w7wajpetxa"
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON201\",\"message\":\"회원가입에 성공했습니다.\",\"result\":{\"memberId\":12,\"email\":\"week7-wajpetx-a@example.com\",\"nickname\":\"w7wajpetxa\"}}"
+      },
+      "passed": true,
+      "elapsedMs": 140
+    },
+    {
+      "id": "02-signup-b",
+      "title": "준비: 회원 B 가입",
+      "at": "2026-11-10T10:26:45.152Z",
+      "scenarioStep": 1,
+      "note": "",
+      "request": {
+        "method": "POST",
+        "path": "/members",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "week7-wajpetx-b@example.com",
+          "password": "Umc!1234",
+          "nickname": "w7wajpetxb"
+        }
+      },
+      "response": {
+        "status": 201,
+        "statusText": "Created",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON201",
+          "message": "회원가입에 성공했습니다.",
+          "result": {
+            "memberId": 13,
+            "email": "week7-wajpetx-b@example.com",
+            "nickname": "w7wajpetxb"
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON201\",\"message\":\"회원가입에 성공했습니다.\",\"result\":{\"memberId\":13,\"email\":\"week7-wajpetx-b@example.com\",\"nickname\":\"w7wajpetxb\"}}"
+      },
+      "passed": true,
+      "elapsedMs": 172
+    },
+    {
+      "id": "03-login-a",
+      "title": "로그인 성공: 회원 A",
+      "at": "2026-11-10T10:26:45.324Z",
+      "scenarioStep": 2,
+      "note": "필수 캡처 1: 실제 로그인 응답의 accessToken. 실행 종료 시 만료 확인 여부도 함께 기록한다.",
+      "request": {
+        "method": "POST",
+        "path": "/auth/login",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "week7-wajpetx-a@example.com",
+          "password": "Umc!1234"
+        }
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "로그인에 성공했습니다.",
+          "result": {
+            "nickname": "w7wajpetxa",
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"로그인에 성공했습니다.\",\"result\":{\"nickname\":\"w7wajpetxa\",\"accessToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM\"}}"
+      },
+      "passed": true,
+      "elapsedMs": 165
+    },
+    {
+      "id": "04-login-b",
+      "title": "로그인 성공: 회원 B",
+      "at": "2026-11-10T10:26:45.489Z",
+      "scenarioStep": 2,
+      "note": "",
+      "request": {
+        "method": "POST",
+        "path": "/auth/login",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "week7-wajpetx-b@example.com",
+          "password": "Umc!1234"
+        }
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "로그인에 성공했습니다.",
+          "result": {
+            "nickname": "w7wajpetxb",
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1iQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.InwEWwLb6fzcZWan62OlC8yPj_5lUbk65bXTaZI2auM"
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"로그인에 성공했습니다.\",\"result\":{\"nickname\":\"w7wajpetxb\",\"accessToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1iQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.InwEWwLb6fzcZWan62OlC8yPj_5lUbk65bXTaZI2auM\"}}"
+      },
+      "passed": true,
+      "elapsedMs": 162
+    },
+    {
+      "id": "05-rating-created",
+      "title": "A 토큰으로 평점 등록 성공",
+      "at": "2026-11-10T10:26:45.651Z",
+      "scenarioStep": 3,
+      "note": "필수 캡처 4: body는 movieId/score/comment이며 memberId가 없다.",
+      "request": {
+        "method": "POST",
+        "path": "/ratings",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": {
+          "movieId": 27205,
+          "score": 5,
+          "comment": "토큰에서 작성자를 확인하는 실습입니다."
+        }
+      },
+      "response": {
+        "status": 201,
+        "statusText": "Created",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON201",
+          "message": "평점 등록에 성공했습니다.",
+          "result": {
+            "ratingId": 4,
+            "memberId": 12,
+            "movieId": 27205,
+            "score": 5,
+            "comment": "토큰에서 작성자를 확인하는 실습입니다."
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON201\",\"message\":\"평점 등록에 성공했습니다.\",\"result\":{\"ratingId\":4,\"memberId\":12,\"movieId\":27205,\"score\":5,\"comment\":\"토큰에서 작성자를 확인하는 실습입니다.\"}}"
+      },
+      "passed": true,
+      "elapsedMs": 48
+    },
+    {
+      "id": "06-rating-duplicate",
+      "title": "같은 영화의 중복 평점 차단",
+      "at": "2026-11-10T10:26:45.700Z",
+      "scenarioStep": 4,
+      "note": "",
+      "request": {
+        "method": "POST",
+        "path": "/ratings",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": {
+          "movieId": 27205,
+          "score": 5,
+          "comment": "토큰에서 작성자를 확인하는 실습입니다."
+        }
+      },
+      "response": {
+        "status": 409,
+        "statusText": "Conflict",
+        "body": {
+          "isSuccess": false,
+          "code": "RATING409_1",
+          "message": "이미 이 영화에 평점을 남기셨습니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"RATING409_1\",\"message\":\"이미 이 영화에 평점을 남기셨습니다.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 10
+    },
+    {
+      "id": "07-owner-edit",
+      "title": "A의 본인 평점 수정",
+      "at": "2026-11-10T10:26:45.710Z",
+      "scenarioStep": 5,
+      "note": "",
+      "request": {
+        "method": "PATCH",
+        "path": "/ratings/4",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": {
+          "score": 4,
+          "comment": "본인 토큰으로 수정한 후기입니다."
+        }
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "평점 수정에 성공했습니다.",
+          "result": {
+            "ratingId": 4,
+            "memberId": 12,
+            "movieId": 27205,
+            "score": 4,
+            "comment": "본인 토큰으로 수정한 후기입니다."
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"평점 수정에 성공했습니다.\",\"result\":{\"ratingId\":4,\"memberId\":12,\"movieId\":27205,\"score\":4,\"comment\":\"본인 토큰으로 수정한 후기입니다.\"}}"
+      },
+      "passed": true,
+      "elapsedMs": 14
+    },
+    {
+      "id": "08-other-owner-edit",
+      "title": "B 토큰으로 A의 평점 수정: 403",
+      "at": "2026-11-10T10:26:45.724Z",
+      "scenarioStep": 6,
+      "note": "필수 캡처 3: B 토큰은 유효하므로 인증 통과 후 소유권 검사에서 거절된다.",
+      "request": {
+        "method": "PATCH",
+        "path": "/ratings/4",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1iQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.InwEWwLb6fzcZWan62OlC8yPj_5lUbk65bXTaZI2auM"
+        },
+        "body": {
+          "score": 1,
+          "comment": "다른 회원의 수정 시도"
+        }
+      },
+      "response": {
+        "status": 403,
+        "statusText": "Forbidden",
+        "body": {
+          "isSuccess": false,
+          "code": "RATING403_1",
+          "message": "본인이 작성한 평점만 수정하거나 삭제할 수 있습니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"RATING403_1\",\"message\":\"본인이 작성한 평점만 수정하거나 삭제할 수 있습니다.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 8
+    },
+    {
+      "id": "09-rating-no-token",
+      "title": "Authorization 없이 같은 평점 수정: 401",
+      "at": "2026-11-10T10:26:45.732Z",
+      "scenarioStep": 7,
+      "note": "",
+      "request": {
+        "method": "PATCH",
+        "path": "/ratings/4",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "score": 1,
+          "comment": "토큰 없는 수정 시도"
+        }
+      },
+      "response": {
+        "status": 401,
+        "statusText": "Unauthorized",
+        "body": {
+          "isSuccess": false,
+          "code": "AUTH401_2",
+          "message": "로그인이 필요한 요청입니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"AUTH401_2\",\"message\":\"로그인이 필요한 요청입니다.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 7
+    },
+    {
+      "id": "10-rating-missing",
+      "title": "없는 평점 삭제: 404",
+      "at": "2026-11-10T10:26:45.752Z",
+      "scenarioStep": 8,
+      "note": "",
+      "request": {
+        "method": "DELETE",
+        "path": "/ratings/99999",
+        "headers": {
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 404,
+        "statusText": "Not Found",
+        "body": {
+          "isSuccess": false,
+          "code": "RATING404_1",
+          "message": "해당 평점을 찾을 수 없습니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"RATING404_1\",\"message\":\"해당 평점을 찾을 수 없습니다.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 7
+    },
+    {
+      "id": "11-owner-delete",
+      "title": "A의 본인 평점 삭제: 200과 result null",
+      "at": "2026-11-10T10:26:45.759Z",
+      "scenarioStep": 9,
+      "note": "",
+      "request": {
+        "method": "DELETE",
+        "path": "/ratings/4",
+        "headers": {
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "평점 삭제에 성공했습니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"평점 삭제에 성공했습니다.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 15
+    },
+    {
+      "id": "12-me-success",
+      "title": "실습 3: 토큰으로 내 정보 조회",
+      "at": "2026-11-10T10:26:45.775Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "GET",
+        "path": "/members/me",
+        "headers": {
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "회원 정보를 조회했습니다.",
+          "result": {
+            "email": "week7-wajpetx-a@example.com",
+            "nickname": "w7wajpetxa",
+            "createdAt": "2026-11-10T10:26:45.107Z"
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"회원 정보를 조회했습니다.\",\"result\":{\"email\":\"week7-wajpetx-a@example.com\",\"nickname\":\"w7wajpetxa\",\"createdAt\":\"2026-11-10T10:26:45.107Z\"}}"
+      },
+      "passed": true,
+      "elapsedMs": 7
+    },
+    {
+      "id": "13-me-no-token",
+      "title": "토큰 없이 내 정보 조회: 401",
+      "at": "2026-11-10T10:26:45.782Z",
+      "scenarioStep": null,
+      "note": "필수 캡처 2: 요청에 Authorization이 없고 AUTH401_2를 반환한다.",
+      "request": {
+        "method": "GET",
+        "path": "/members/me",
+        "headers": {},
+        "body": null
+      },
+      "response": {
+        "status": 401,
+        "statusText": "Unauthorized",
+        "body": {
+          "isSuccess": false,
+          "code": "AUTH401_2",
+          "message": "로그인이 필요한 요청입니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"AUTH401_2\",\"message\":\"로그인이 필요한 요청입니다.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 3
+    },
+    {
+      "id": "14-me-tampered",
+      "title": "실습 2·3: payload 한 글자 변조 거절",
+      "at": "2026-11-10T10:26:45.786Z",
+      "scenarioStep": null,
+      "note": "JSON과 만료 시각을 유지한 채 sub를 바꾸어 인코딩 payload의 한 글자만 교체했다. 원래 서명은 그대로 두었으며 401로 거절됐다.",
+      "request": {
+        "method": "GET",
+        "path": "/members/me",
+        "headers": {
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 401,
+        "statusText": "Unauthorized",
+        "body": {
+          "isSuccess": false,
+          "code": "AUTH401_3",
+          "message": "유효하지 않은 토큰입니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"AUTH401_3\",\"message\":\"유효하지 않은 토큰입니다.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 4
+    },
+    {
+      "id": "15-login-unknown",
+      "title": "가입하지 않은 이메일의 로그인 실패",
+      "at": "2026-11-10T10:26:45.791Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "POST",
+        "path": "/auth/login",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "missing-wajpetx@example.com",
+          "password": "Umc!1234"
+        }
+      },
+      "response": {
+        "status": 401,
+        "statusText": "Unauthorized",
+        "body": {
+          "isSuccess": false,
+          "code": "AUTH401_1",
+          "message": "이메일 또는 비밀번호가 올바르지 않습니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"AUTH401_1\",\"message\":\"이메일 또는 비밀번호가 올바르지 않습니다.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 166
+    },
+    {
+      "id": "16-login-wrong-password",
+      "title": "틀린 비밀번호의 로그인 실패",
+      "at": "2026-11-10T10:26:45.957Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "POST",
+        "path": "/auth/login",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "week7-wajpetx-a@example.com",
+          "password": "Wrong!1234"
+        }
+      },
+      "response": {
+        "status": 401,
+        "statusText": "Unauthorized",
+        "body": {
+          "isSuccess": false,
+          "code": "AUTH401_1",
+          "message": "이메일 또는 비밀번호가 올바르지 않습니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"AUTH401_1\",\"message\":\"이메일 또는 비밀번호가 올바르지 않습니다.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 165
+    },
+    {
+      "id": "17-me-edit",
+      "title": "실습 4: 내 닉네임 수정",
+      "at": "2026-11-10T10:26:46.122Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "PATCH",
+        "path": "/members/me",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": {
+          "nickname": "n7wajpetxa"
+        }
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "회원 정보를 수정했습니다.",
+          "result": {
+            "email": "week7-wajpetx-a@example.com",
+            "nickname": "n7wajpetxa",
+            "createdAt": "2026-11-10T10:26:45.107Z"
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"회원 정보를 수정했습니다.\",\"result\":{\"email\":\"week7-wajpetx-a@example.com\",\"nickname\":\"n7wajpetxa\",\"createdAt\":\"2026-11-10T10:26:45.107Z\"}}"
+      },
+      "passed": true,
+      "elapsedMs": 51
+    },
+    {
+      "id": "18-me-after-edit",
+      "title": "내 정보 재조회로 수정 반영 확인",
+      "at": "2026-11-10T10:26:46.173Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "GET",
+        "path": "/members/me",
+        "headers": {
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "회원 정보를 조회했습니다.",
+          "result": {
+            "email": "week7-wajpetx-a@example.com",
+            "nickname": "n7wajpetxa",
+            "createdAt": "2026-11-10T10:26:45.107Z"
+          }
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"회원 정보를 조회했습니다.\",\"result\":{\"email\":\"week7-wajpetx-a@example.com\",\"nickname\":\"n7wajpetxa\",\"createdAt\":\"2026-11-10T10:26:45.107Z\"}}"
+      },
+      "passed": true,
+      "elapsedMs": 8
+    },
+    {
+      "id": "19-me-duplicate-nickname",
+      "title": "다른 회원의 닉네임 중복 거절",
+      "at": "2026-11-10T10:26:46.181Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "PATCH",
+        "path": "/members/me",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": {
+          "nickname": "w7wajpetxb"
+        }
+      },
+      "response": {
+        "status": 409,
+        "statusText": "Conflict",
+        "body": {
+          "isSuccess": false,
+          "code": "MEMBER409_1",
+          "message": "이미 사용 중인 닉네임입니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"MEMBER409_1\",\"message\":\"이미 사용 중인 닉네임입니다.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 9
+    },
+    {
+      "id": "20-me-short-nickname",
+      "title": "한 글자 닉네임 검증 실패",
+      "at": "2026-11-10T10:26:46.190Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "PATCH",
+        "path": "/members/me",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": {
+          "nickname": "가"
+        }
+      },
+      "response": {
+        "status": 400,
+        "statusText": "Bad Request",
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "닉네임은 2자 이상 12자 이하여야 합니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"COMMON4001\",\"message\":\"닉네임은 2자 이상 12자 이하여야 합니다.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 8
+    },
+    {
+      "id": "21-me-blank-nickname",
+      "title": "공백 닉네임 검증 실패",
+      "at": "2026-11-10T10:26:46.198Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "PATCH",
+        "path": "/members/me",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": {
+          "nickname": "   "
+        }
+      },
+      "response": {
+        "status": 400,
+        "statusText": "Bad Request",
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "닉네임은 공백만으로 구성할 수 없습니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"COMMON4001\",\"message\":\"닉네임은 공백만으로 구성할 수 없습니다.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 7
+    },
+    {
+      "id": "22-me-extra-field",
+      "title": "내 정보 요청의 memberId 주입 차단",
+      "at": "2026-11-10T10:26:46.205Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "PATCH",
+        "path": "/members/me",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": {
+          "nickname": "n7wajpetxa",
+          "memberId": 13
+        }
+      },
+      "response": {
+        "status": 400,
+        "statusText": "Bad Request",
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "property memberId should not exist",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"COMMON4001\",\"message\":\"property memberId should not exist\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 7
+    },
+    {
+      "id": "23-rating-spoof",
+      "title": "평점 등록 body의 memberId 주입 차단",
+      "at": "2026-11-10T10:26:46.213Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "POST",
+        "path": "/ratings",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": {
+          "movieId": 27205,
+          "score": 5,
+          "comment": "토큰에서 작성자를 확인하는 실습입니다.",
+          "memberId": 13
+        }
+      },
+      "response": {
+        "status": 400,
+        "statusText": "Bad Request",
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "property memberId should not exist",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"COMMON4001\",\"message\":\"property memberId should not exist\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 6
+    },
+    {
+      "id": "24-legacy-write-removed",
+      "title": "기존 memberId 경로의 등록 API 제거 확인",
+      "at": "2026-11-10T10:26:46.219Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "POST",
+        "path": "/members/12/ratings",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": {
+          "movieId": 27205,
+          "score": 5,
+          "comment": "토큰에서 작성자를 확인하는 실습입니다."
+        }
+      },
+      "response": {
+        "status": 404,
+        "statusText": "Not Found",
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON404",
+          "message": "Cannot POST /members/12/ratings",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"COMMON404\",\"message\":\"Cannot POST /members/12/ratings\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 6
+    },
+    {
+      "id": "25-public-ratings",
+      "title": "공개 회원별 평점 조회 유지",
+      "at": "2026-11-10T10:26:46.225Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "GET",
+        "path": "/members/12/ratings",
+        "headers": {},
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "statusText": "OK",
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "평점 조회에 성공했습니다.",
+          "result": []
+        },
+        "raw": "{\"isSuccess\":true,\"code\":\"COMMON200\",\"message\":\"평점 조회에 성공했습니다.\",\"result\":[]}"
+      },
+      "passed": true,
+      "elapsedMs": 6
+    },
+    {
+      "id": "26-repeat-delete",
+      "title": "삭제한 평점 재삭제: 404",
+      "at": "2026-11-10T10:26:46.231Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "DELETE",
+        "path": "/ratings/4",
+        "headers": {
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 404,
+        "statusText": "Not Found",
+        "body": {
+          "isSuccess": false,
+          "code": "RATING404_1",
+          "message": "해당 평점을 찾을 수 없습니다.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"RATING404_1\",\"message\":\"해당 평점을 찾을 수 없습니다.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 5
+    },
+    {
+      "id": "27-expired-token-a",
+      "title": "추가 확인: A 토큰 만료 후 401",
+      "at": "2026-11-10T10:27:00.257Z",
+      "scenarioStep": null,
+      "note": "검증 서버의 짧은 유효시간으로 확인했다. 워크북 선택 미션의 60초 대기와는 별도 실행이다.",
+      "request": {
+        "method": "GET",
+        "path": "/members/me",
+        "headers": {
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1hQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.kX6EPA8Xf7d-oTziGElo7bxd4-HLVsIcVnuImfZuSbM"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 401,
+        "statusText": "Unauthorized",
+        "body": {
+          "isSuccess": false,
+          "code": "AUTH401_4",
+          "message": "토큰이 만료되었습니다. 다시 로그인해주세요.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"AUTH401_4\",\"message\":\"토큰이 만료되었습니다. 다시 로그인해주세요.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 7
+    },
+    {
+      "id": "28-expired-token-b",
+      "title": "추가 확인: B 토큰도 만료됨",
+      "at": "2026-11-10T10:27:00.264Z",
+      "scenarioStep": null,
+      "note": "",
+      "request": {
+        "method": "GET",
+        "path": "/members/me",
+        "headers": {
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMyIsImVtYWlsIjoid2Vlazctd2FqcGV0eC1iQGV4YW1wbGUuY29tIiwiaWF0IjoxNzk0MzA2NDA1LCJleHAiOjE3OTQzMDY0MjB9.InwEWwLb6fzcZWan62OlC8yPj_5lUbk65bXTaZI2auM"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 401,
+        "statusText": "Unauthorized",
+        "body": {
+          "isSuccess": false,
+          "code": "AUTH401_4",
+          "message": "토큰이 만료되었습니다. 다시 로그인해주세요.",
+          "result": null
+        },
+        "raw": "{\"isSuccess\":false,\"code\":\"AUTH401_4\",\"message\":\"토큰이 만료되었습니다. 다시 로그인해주세요.\",\"result\":null}"
+      },
+      "passed": true,
+      "elapsedMs": 7
+    }
+  ],
+  "database": {
+    "password": {
+      "algorithm": "bcrypt",
+      "length": 60,
+      "rounds": 10,
+      "differsFromPlaintext": true,
+      "matchesPassword": true
+    },
+    "nickname": "n7wajpetxa",
+    "nicknameMatchesPatch": true,
+    "createdAtPresent": true,
+    "deletedRatingRows": 0,
+    "memberId": 12,
+    "otherMemberId": 13
+  },
+  "requiredCaptureIds": [
+    "03-login-a",
+    "13-me-no-token",
+    "08-other-owner-edit",
+    "05-rating-created"
+  ],
+  "scenario": [
+    {
+      "step": 1,
+      "title": "회원 A/B 가입",
+      "ids": [
+        "01-signup-a",
+        "02-signup-b"
+      ]
+    },
+    {
+      "step": 2,
+      "title": "회원 A/B 로그인",
+      "ids": [
+        "03-login-a",
+        "04-login-b"
+      ]
+    },
+    {
+      "step": 3,
+      "title": "A의 평점 등록",
+      "ids": [
+        "05-rating-created"
+      ]
+    },
+    {
+      "step": 4,
+      "title": "같은 영화 중복 등록",
+      "ids": [
+        "06-rating-duplicate"
+      ]
+    },
+    {
+      "step": 5,
+      "title": "A의 본인 평점 수정",
+      "ids": [
+        "07-owner-edit"
+      ]
+    },
+    {
+      "step": 6,
+      "title": "B의 타인 평점 수정",
+      "ids": [
+        "08-other-owner-edit"
+      ]
+    },
+    {
+      "step": 7,
+      "title": "토큰 없이 같은 요청",
+      "ids": [
+        "09-rating-no-token"
+      ]
+    },
+    {
+      "step": 8,
+      "title": "없는 평점 삭제",
+      "ids": [
+        "10-rating-missing"
+      ]
+    },
+    {
+      "step": 9,
+      "title": "A의 본인 평점 삭제",
+      "ids": [
+        "11-owner-delete"
+      ]
+    }
+  ],
+  "memberId": 12,
+  "otherMemberId": 13,
+  "jwt": {
+    "header": {
+      "alg": "HS256",
+      "typ": "JWT"
+    },
+    "payload": {
+      "sub": "12",
+      "email": "week7-wajpetx-a@example.com",
+      "iat": 1794306405,
+      "exp": 1794306420
+    },
+    "lifetimeSeconds": 15,
+    "decodedLocally": true,
+    "externalJwtDebuggerUsed": false,
+    "tokensExpiredAtVerification": true,
+    "expiredByUtc": "2026-11-10T10:27:00.000Z"
+  },
+  "ratingId": 4,
+  "scenarioPassed": true,
+  "loginFailureResponsesIdentical": true,
+  "passed": true,
+  "requestCount": 28,
+  "passedCount": 28,
+  "finishedAt": "2026-11-10T10:27:00.272Z"
+}

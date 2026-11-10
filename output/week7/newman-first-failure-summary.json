@@ -1,0 +1,146 @@
+{
+  "source": "output/week7/newman-results.json",
+  "runAt": 1794305911664,
+  "failureCount": 23,
+  "failures": [
+    {
+      "at": "test-script",
+      "name": "01 준비 - 회원 A 가입",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "02 준비 - 회원 B 가입",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "03 로그인 - 회원 A accessToken",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "04 로그인 - 회원 B accessToken",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "05 등록 - A 본인 토큰 201",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "06 중복 등록 - 409",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "07 본인 수정 - A 200",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "08 남의 것 수정 - B 403",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "09 토큰 없이 같은 수정 - 401",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "10 없는 평점 삭제 - 404",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "11 본인 삭제 - A 200 result null",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "12 실습 내 정보 조회",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "13 필수 캡처 토큰 없이 GET me 401",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "14 payload 한 글자 변조 401",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "15 없는 이메일 로그인 401",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "16 틀린 비밀번호 로그인 401",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "17 내 닉네임 수정",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "18 내 정보 재조회",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "19 타인 닉네임 중복 409",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "20 짧은 닉네임 검증 400",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "21 요청의 memberId 주입 차단",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "22 기존 memberId 등록 경로 제거",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    },
+    {
+      "at": "test-script",
+      "name": "23 공개 회원별 평점 조회 유지",
+      "error": "SyntaxError",
+      "message": "Identifier 'data' has already been declared"
+    }
+  ],
+  "note": "Summary retained before the collection script scope fix; no token or credential values are copied."
+}

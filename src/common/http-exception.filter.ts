@@ -42,7 +42,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
           uq_member_email: ['MEMBER4091', '이미 사용 중인 이메일입니다.'],
           uq_member_nickname: ['MEMBER4092', '이미 사용 중인 닉네임입니다.'],
           uq_rating_member_movie: [
-            'RATING4091',
+            'RATING409_1',
             '이미 이 영화에 평점을 남기셨습니다.',
           ],
         };

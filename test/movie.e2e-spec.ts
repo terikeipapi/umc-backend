@@ -1,13 +1,16 @@
 import { Test } from '@nestjs/testing';
 import type { INestApplication } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 import request from 'supertest';
 import { configureApp } from '../src/common/configure-app.js';
 import { DatabaseService } from '../src/database/database.service.js';
 import { MovieModule } from '../src/movie/movie.module.js';
 
-describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
+describe('Week 7 movie API (JWT, validation, services; mock database)', () => {
   let app: INestApplication;
+  let authorization: string;
   const execute = vi.fn();
   const signUp = {
     email: 'umc@example.com',
@@ -31,7 +34,21 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
 
   beforeEach(async () => {
     execute.mockReset();
-    const module = await Test.createTestingModule({ imports: [MovieModule] })
+    const module = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          ignoreEnvFile: true,
+          load: [
+            () => ({
+              JWT_SECRET: 'week7-e2e-only-signing-key-at-least-32-bytes',
+              JWT_ACCESS_EXPIRATION: '3600',
+            }),
+          ],
+        }),
+        MovieModule,
+      ],
+    })
       .overrideProvider(DatabaseService)
       .useValue({ pool: { execute } })
       .compile();
@@ -39,6 +56,7 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
     app.useLogger(false);
     configureApp(app);
     await app.init();
+    authorization = `Bearer ${app.get(JwtService).sign({ sub: '7', email: signUp.email })}`;
   });
 
   afterEach(async () => {
@@ -154,14 +172,21 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
       .mockResolvedValueOnce(rows([]))
       .mockResolvedValueOnce([{ insertId: 11, affectedRows: 1 }]);
     const response = await request(app.getHttpServer())
-      .post('/members/7/ratings')
+      .post('/ratings')
+      .set('Authorization', authorization)
       .send(rating)
       .expect(201);
     expect(response.body).toEqual({
       isSuccess: true,
       code: 'COMMON201',
       message: expect.any(String),
-      result: 11,
+      result: {
+        ratingId: 11,
+        memberId: 7,
+        movieId: 550,
+        score: 5,
+        comment: rating.comment,
+      },
     });
     expect(execute.mock.calls[2][1]).toEqual([7, 550, 5, rating.comment]);
   });
@@ -178,7 +203,8 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
         .mockResolvedValueOnce(rows([]))
         .mockResolvedValueOnce([{ insertId: 11, affectedRows: 1 }]);
       await request(app.getHttpServer())
-        .post('/members/7/ratings')
+        .post('/ratings')
+        .set('Authorization', authorization)
         .send({ movieId: 550, score, comment })
         .expect(201);
       expect(execute.mock.calls[2][1]).toEqual([7, 550, score, storedComment]);
@@ -202,7 +228,8 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
     'rejects a rating with %s before accessing the database',
     async (_, override) => {
       const response = await request(app.getHttpServer())
-        .post('/members/7/ratings')
+        .post('/ratings')
+        .set('Authorization', authorization)
         .send({ ...rating, ...override })
         .expect(400);
       failure(response.body, 'COMMON4001');
@@ -213,10 +240,11 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
   it('returns 404 for a nonexistent member without inserting a rating', async () => {
     execute.mockResolvedValueOnce(rows([]));
     const response = await request(app.getHttpServer())
-      .post('/members/7/ratings')
+      .post('/ratings')
+      .set('Authorization', authorization)
       .send(rating)
       .expect(404);
-    failure(response.body, 'MEMBER4041');
+    failure(response.body, 'MEMBER404_1');
     expect(execute).toHaveBeenCalledTimes(1);
   });
 
@@ -225,10 +253,11 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
       .mockResolvedValueOnce(rows([{ member_id: 7 }]))
       .mockResolvedValueOnce(rows([{ rating_id: 11 }]));
     const response = await request(app.getHttpServer())
-      .post('/members/7/ratings')
+      .post('/ratings')
+      .set('Authorization', authorization)
       .send(rating)
       .expect(409);
-    failure(response.body, 'RATING4091');
+    failure(response.body, 'RATING409_1');
     expect(execute).toHaveBeenCalledTimes(2);
   });
 
@@ -245,10 +274,11 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
           "Duplicate entry '7-550' for key 'rating.uq_rating_member_movie'",
       });
     const response = await request(app.getHttpServer())
-      .post('/members/7/ratings')
+      .post('/ratings')
+      .set('Authorization', authorization)
       .send(rating)
       .expect(409);
-    failure(response.body, 'RATING4091');
+    failure(response.body, 'RATING409_1');
   });
 
   it('lists the member ratings using public response fields', async () => {
@@ -277,11 +307,45 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
 
   it('updates an owned rating and clears an omitted optional comment', async () => {
     execute
+      .mockResolvedValueOnce(
+        rows([
+          {
+            rating_id: 11,
+            member_id: 7,
+            movie_id: 550,
+            score: 5,
+            comment: null,
+          },
+        ]),
+      )
+      .mockResolvedValueOnce([{ affectedRows: 1 }]);
+    const response = await request(app.getHttpServer())
+      .patch('/ratings/11')
+      .set('Authorization', authorization)
+      .send({ score: 3 })
+      .expect(200);
+    expect(response.body).toEqual({
+      isSuccess: true,
+      code: 'COMMON200',
+      message: expect.any(String),
+      result: {
+        ratingId: 11,
+        memberId: 7,
+        movieId: 550,
+        score: 3,
+        comment: null,
+      },
+    });
+    expect(execute.mock.calls[1][1]).toEqual([3, null, 11, 7]);
+  });
+
+  it('deletes an owned rating with 200 and the common null result envelope', async () => {
+    execute
       .mockResolvedValueOnce(rows([{ rating_id: 11, member_id: 7 }]))
       .mockResolvedValueOnce([{ affectedRows: 1 }]);
     const response = await request(app.getHttpServer())
-      .patch('/members/7/ratings/11')
-      .send({ score: 3 })
+      .delete('/ratings/11')
+      .set('Authorization', authorization)
       .expect(200);
     expect(response.body).toEqual({
       isSuccess: true,
@@ -289,17 +353,6 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
       message: expect.any(String),
       result: null,
     });
-    expect(execute.mock.calls[1][1]).toEqual([3, null, 11, 7]);
-  });
-
-  it('deletes an owned rating with 204 and an empty response body', async () => {
-    execute
-      .mockResolvedValueOnce(rows([{ rating_id: 11, member_id: 7 }]))
-      .mockResolvedValueOnce([{ affectedRows: 1 }]);
-    const response = await request(app.getHttpServer())
-      .delete('/members/7/ratings/11')
-      .expect(204);
-    expect(response.text).toBe('');
     expect(execute.mock.calls[1][1]).toEqual([11, 7]);
   });
 
@@ -308,10 +361,11 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
     async (method) => {
       execute.mockResolvedValueOnce(rows([{ rating_id: 11, member_id: 8 }]));
       const response = await request(app.getHttpServer())
-        [method]('/members/7/ratings/11')
+        [method]('/ratings/11')
+        .set('Authorization', authorization)
         .send(method === 'patch' ? { score: 3 } : undefined)
         .expect(403);
-      failure(response.body, 'RATING4031');
+      failure(response.body, 'RATING403_1');
       expect(execute).toHaveBeenCalledTimes(1);
     },
   );
@@ -321,10 +375,11 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
     async (method) => {
       execute.mockResolvedValueOnce(rows([]));
       const response = await request(app.getHttpServer())
-        [method]('/members/7/ratings/11')
+        [method]('/ratings/11')
+        .set('Authorization', authorization)
         .send(method === 'patch' ? { score: 3 } : undefined)
         .expect(404);
-      failure(response.body, 'RATING4041');
+      failure(response.body, 'RATING404_1');
       expect(execute).toHaveBeenCalledTimes(1);
     },
   );
@@ -336,10 +391,11 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
         .mockResolvedValueOnce(rows([{ rating_id: 11, member_id: 7 }]))
         .mockResolvedValueOnce([{ affectedRows: 0 }]);
       const response = await request(app.getHttpServer())
-        [method]('/members/7/ratings/11')
+        [method]('/ratings/11')
+        .set('Authorization', authorization)
         .send(method === 'patch' ? { score: 3 } : undefined)
         .expect(404);
-      failure(response.body, 'RATING4041');
+      failure(response.body, 'RATING404_1');
     },
   );
 
@@ -347,7 +403,8 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
     'validates PATCH input %j before checking ownership',
     async (body) => {
       const response = await request(app.getHttpServer())
-        .patch('/members/7/ratings/11')
+        .patch('/ratings/11')
+        .set('Authorization', authorization)
         .send(body)
         .expect(400);
       failure(response.body, 'COMMON4001');
@@ -356,11 +413,12 @@ describe('Week 6 movie API (HTTP, validation, services; mock database)', () => {
   );
 
   it.each(['0', '-1', '1.5', 'abc', '9007199254740992'])(
-    'rejects the invalid member path parameter %s',
-    async (memberId) => {
+    'rejects the invalid rating path parameter %s',
+    async (ratingId) => {
       const response = await request(app.getHttpServer())
-        .post(`/members/${memberId}/ratings`)
-        .send(rating)
+        .patch(`/ratings/${ratingId}`)
+        .set('Authorization', authorization)
+        .send({ score: 3 })
         .expect(400);
       failure(response.body, 'COMMON4001');
       expect(execute).not.toHaveBeenCalled();
