@@ -1,5 +1,31 @@
 # UMC 백엔드 스터디
 
+## 8주차: 찜 API와 프런트엔드 연동 지원
+
+로그인한 회원별 찜 조회·추가·삭제 API를 추가했습니다. 모든 요청에는 `Authorization: Bearer <accessToken>`이 필요하고, 회원 ID는 검증한 JWT에서만 읽습니다.
+
+| 요청 | 요청 본문 | 성공 `result` |
+| --- | --- | --- |
+| `GET /favorites` | 없음 | `[{ "movieId": 550 }]` |
+| `GET /favorites/550` | 없음 | `{ "movieId": 550, "isFavorite": true }` |
+| `POST /favorites` | `{ "movieId": 550 }` | `{ "movieId": 550, "isFavorite": true }` (201) |
+| `DELETE /favorites/550` | 없음 | `null` (200) |
+
+찜이 없는 목록은 빈 배열이며, 찜하지 않은 영화 조회는 `isFavorite: false`입니다. 중복 추가와 반복 삭제는 성공합니다. DB의 `(member_id, movie_id)` 유일 제약과 원자적 upsert로 동시 추가도 중복 행을 만들지 않습니다. 기존 평점 API는 그대로 사용합니다.
+
+```bash
+npm run week8:db
+npm run build
+npm run start:prod
+# 다른 터미널
+npm run week8:verify
+npm run test:e2e
+```
+
+`week8:db`는 기존 회원·평점 테이블을 보존하고 [favorite 테이블](sql/week8-favorites.sql)을 추가합니다. `week8:verify`는 로컬 서버와 실제 MySQL로 찜·평점 CRUD 및 계정 간 격리 33건을 검증합니다. 임시 검증 회원 2개를 생성하고, 완료·실패 시 생성한 회원 ID와 이메일을 모두 확인해 해당 회원과 연결 데이터만 정리합니다. 토큰·비밀번호를 제외한 [실제 HTTP 검증 기록](output/week8/api-verification.json)을 저장합니다.
+
+검증 결과: 빌드, 단위 테스트 1개, E2E 187개, 실제 HTTP 33건 통과. 린트는 종료 코드 0이며 기존 `test/books.db-verification.mjs:294`의 타입 경고 2건이 남아 있습니다. PowerShell 실행 정책으로 `npm` 실행이 차단되면 `npm.cmd`를 사용합니다.
+
 ## 7주차: 로그인한 사용자를 구분하기
 
 NestJS와 MySQL로 JWT 로그인, 인증 Guard, 내 정보 조회·닉네임 수정, 토큰 기반 평점 등록·수정·삭제를 구현했습니다. 현재 평점 쓰기는 `/ratings`와 `/ratings/:ratingId`를 사용하며, 삭제 성공은 200과 `result: null`을 반환합니다. 공개 회원별 평점 조회는 유지합니다.

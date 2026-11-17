@@ -1,0 +1,244 @@
+{
+  "verifiedAt": "2026-11-17T04:18:36.883Z",
+  "requests": 33,
+  "allPassed": true,
+  "note": "Real local HTTP + MySQL; created verification members were removed with exact member ID and generated email matching. Credentials and tokens are excluded.",
+  "cleanup": {
+    "members": 2,
+    "favorites": 0,
+    "ratings": 0
+  },
+  "evidence": [
+    {
+      "name": "Reject unauthenticated favorites request",
+      "method": "GET",
+      "path": "/favorites",
+      "status": 401,
+      "code": "AUTH401_2"
+    },
+    {
+      "name": "Reject unauthenticated favorites request",
+      "method": "GET",
+      "path": "/favorites/550",
+      "status": 401,
+      "code": "AUTH401_2"
+    },
+    {
+      "name": "Reject unauthenticated favorites request",
+      "method": "POST",
+      "path": "/favorites",
+      "status": 401,
+      "code": "AUTH401_2"
+    },
+    {
+      "name": "Reject unauthenticated favorites request",
+      "method": "DELETE",
+      "path": "/favorites/550",
+      "status": 401,
+      "code": "AUTH401_2"
+    },
+    {
+      "name": "Create isolated verification member",
+      "method": "POST",
+      "path": "/members",
+      "status": 201,
+      "code": "COMMON201"
+    },
+    {
+      "name": "Log in verification member",
+      "method": "POST",
+      "path": "/auth/login",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Create isolated verification member",
+      "method": "POST",
+      "path": "/members",
+      "status": 201,
+      "code": "COMMON201"
+    },
+    {
+      "name": "Log in verification member",
+      "method": "POST",
+      "path": "/auth/login",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Read authenticated profile",
+      "method": "GET",
+      "path": "/members/me",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Initial favorites empty",
+      "method": "GET",
+      "path": "/favorites",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Initial status false",
+      "method": "GET",
+      "path": "/favorites/550",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Idempotent favorite add",
+      "method": "POST",
+      "path": "/favorites",
+      "status": 201,
+      "code": "COMMON201"
+    },
+    {
+      "name": "Idempotent favorite add",
+      "method": "POST",
+      "path": "/favorites",
+      "status": 201,
+      "code": "COMMON201"
+    },
+    {
+      "name": "List has one favorite after repeated add",
+      "method": "GET",
+      "path": "/favorites",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Status true after add",
+      "method": "GET",
+      "path": "/favorites/550",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Other account favorites remain empty",
+      "method": "GET",
+      "path": "/favorites",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Other account status remains false",
+      "method": "GET",
+      "path": "/favorites/550",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Other account delete cannot remove owner favorite",
+      "method": "DELETE",
+      "path": "/favorites/550",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Owner favorite survives other-account delete",
+      "method": "GET",
+      "path": "/favorites/550",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Concurrent duplicate favorite add",
+      "method": "POST",
+      "path": "/favorites",
+      "status": 201,
+      "code": "COMMON201"
+    },
+    {
+      "name": "Concurrent duplicate favorite add",
+      "method": "POST",
+      "path": "/favorites",
+      "status": 201,
+      "code": "COMMON201"
+    },
+    {
+      "name": "Unique pair survives concurrent adds",
+      "method": "GET",
+      "path": "/favorites",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Idempotent favorite removal",
+      "method": "DELETE",
+      "path": "/favorites/550",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Idempotent favorite removal",
+      "method": "DELETE",
+      "path": "/favorites/550",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Favorites empty after removal",
+      "method": "GET",
+      "path": "/favorites",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Initial member ratings empty",
+      "method": "GET",
+      "path": "/members/16/ratings",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Create rating",
+      "method": "POST",
+      "path": "/ratings",
+      "status": 201,
+      "code": "COMMON201"
+    },
+    {
+      "name": "Prevent other account rating update",
+      "method": "PATCH",
+      "path": "/ratings/6",
+      "status": 403,
+      "code": "RATING403_1"
+    },
+    {
+      "name": "Prevent other account rating deletion",
+      "method": "DELETE",
+      "path": "/ratings/6",
+      "status": 403,
+      "code": "RATING403_1"
+    },
+    {
+      "name": "Read created member rating",
+      "method": "GET",
+      "path": "/members/16/ratings",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Update owned rating",
+      "method": "PATCH",
+      "path": "/ratings/6",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Delete owned rating",
+      "method": "DELETE",
+      "path": "/ratings/6",
+      "status": 200,
+      "code": "COMMON200"
+    },
+    {
+      "name": "Ratings empty after deletion",
+      "method": "GET",
+      "path": "/members/16/ratings",
+      "status": 200,
+      "code": "COMMON200"
+    }
+  ]
+}
