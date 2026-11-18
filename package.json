@@ -27,7 +27,9 @@
     "week7:verify": "node scripts/week7-verify.mjs",
     "week7:report": "node scripts/week7-report.mjs",
     "week8:db": "node scripts/week8-db.mjs",
-    "week8:verify": "node scripts/week8-verify.mjs"
+    "week8:verify": "node scripts/week8-workbook-verify.mjs",
+    "week8:workbook:verify": "node scripts/week8-workbook-verify.mjs",
+    "week8:postman": "node scripts/week8-postman.mjs"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",

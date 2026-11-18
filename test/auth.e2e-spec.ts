@@ -13,6 +13,7 @@ import { configureApp } from '../src/common/configure-app.js';
 import { DatabaseService } from '../src/database/database.service.js';
 import { ApiException } from '../src/exception/api.exception.js';
 import { MovieModule } from '../src/movie/movie.module.js';
+import { MockMovieOrmModule } from './helpers/movie-orm.module.js';
 
 const TEST_SECRET = 'week7-e2e-only-signing-key-at-least-32-bytes';
 const tokenIssuer = new JwtService({ secret: TEST_SECRET });
@@ -67,6 +68,7 @@ describe('Week 7 authentication and member identity (real JWT, mock database)', 
             () => ({ JWT_SECRET: TEST_SECRET, JWT_ACCESS_EXPIRATION: '3600' }),
           ],
         }),
+        MockMovieOrmModule,
         MovieModule,
       ],
       controllers: [ExceptionProbeController],

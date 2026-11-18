@@ -1,17 +1,23 @@
 # UMC 백엔드 스터디
 
-## 8주차: 찜 API와 프런트엔드 연동 지원
+## 8주차: 서비스의 핵심 기능 만들기
 
-로그인한 회원별 찜 조회·추가·삭제 API를 추가했습니다. 모든 요청에는 `Authorization: Bearer <accessToken>`이 필요하고, 회원 ID는 검증한 JWT에서만 읽습니다.
+사용자 제공 백엔드 PDF의 NestJS 실습 1~4와 Standard Mission을 구현했습니다. Favorite은 BaseTimeEntity를 상속하며 TypeORM Repository로 회원별 즐겨찾기를 관리합니다. 모든 요청에는 `Authorization: Bearer <accessToken>`이 필요하고, 회원 ID는 검증한 JWT에서만 읽습니다.
 
 | 요청 | 요청 본문 | 성공 `result` |
 | --- | --- | --- |
-| `GET /favorites` | 없음 | `[{ "movieId": 550 }]` |
-| `GET /favorites/550` | 없음 | `{ "movieId": 550, "isFavorite": true }` |
-| `POST /favorites` | `{ "movieId": 550 }` | `{ "movieId": 550, "isFavorite": true }` (201) |
+| `GET /favorites` | 없음 | `[{ "favoriteId": 1, "movieId": 550, "createdAt": "..." }]` |
+| `GET /favorites/550` | 없음 | `{ "isFavorite": true }` |
+| `POST /favorites` | `{ "movieId": 550 }` | `{ "favoriteId": 1, "movieId": 550, "createdAt": "..." }` (201) |
 | `DELETE /favorites/550` | 없음 | `null` (200) |
+| `POST /movie-records` | `movieId, score, comment?, addToFavorites` | `{ "rating": { ... }, "favorite": { ... } }` (201) |
 
-찜이 없는 목록은 빈 배열이며, 찜하지 않은 영화 조회는 `isFavorite: false`입니다. 중복 추가와 반복 삭제는 성공합니다. DB의 `(member_id, movie_id)` 유일 제약과 원자적 upsert로 동시 추가도 중복 행을 만들지 않습니다. 기존 평점 API는 그대로 사용합니다.
+찜이 없는 목록은 빈 배열이며, 찜하지 않은 영화 조회는 `isFavorite: false`입니다. 중복 등록은 **409·FAVORITE409_1**, 없는 찜 삭제는 **404·FAVORITE404_1**입니다. DB의 `(member_id, movie_id)` 유일 제약은 동시 요청의 중복도 막습니다. 영화 기록은 `DataSource.transaction()`에서 같은 manager의 Repository로 두 저장을 묶습니다. `addToFavorites:false`면 평점만 저장하고 `favorite:null`을 반환합니다.
+
+- [실습 인증·필수 미션 기록과 실제 화면](docs/week8/SUBMISSION.md)
+- [트러블슈팅 보고서](docs/week8/TROUBLESHOOTING.md), [API 명세](docs/week8/API.md), [학습 키워드·후기 초안](docs/week8/LEARNING.md)
+- [Postman Collection](docs/week8/week8.postman_collection.json), [Environment](docs/week8/week8.postman_environment.json)
+- [소스·보고서·인증 자료 제출 ZIP](output/week8-workbook-submission.zip)
 
 ```bash
 npm run week8:db
@@ -19,12 +25,15 @@ npm run build
 npm run start:prod
 # 다른 터미널
 npm run week8:verify
+node scripts/week8-newman.mjs
 npm run test:e2e
 ```
 
-`week8:db`는 기존 회원·평점 테이블을 보존하고 [favorite 테이블](sql/week8-favorites.sql)을 추가합니다. `week8:verify`는 로컬 서버와 실제 MySQL로 찜·평점 CRUD 및 계정 간 격리 33건을 검증합니다. 임시 검증 회원 2개를 생성하고, 완료·실패 시 생성한 회원 ID와 이메일을 모두 확인해 해당 회원과 연결 데이터만 정리합니다. 토큰·비밀번호를 제외한 [실제 HTTP 검증 기록](output/week8/api-verification.json)을 저장합니다.
+`week8:db`는 기존 테이블·찜 데이터를 유지하고 필요한 테이블 및 시간 컬럼을 준비합니다. 과거 찜의 원래 생성 시각은 저장되지 않았으므로 기존 행에는 마이그레이션 시각이 채워집니다. `week8:verify`는 실제 HTTP 40건과 DB 검사 9건을 수행하고 격리된 검증 회원을 정리합니다. 첫 INSERT 뒤의 실제 rollback도 별도로 검사합니다. [HTTP·DB 기록](output/week8-workbook/evidence.json)과 [Newman 기록](output/week8-workbook/newman-results.json)은 토큰·비밀번호를 제외한 자료입니다.
 
-검증 결과: 빌드, 단위 테스트 1개, E2E 187개, 실제 HTTP 33건 통과. 린트는 종료 코드 0이며 기존 `test/books.db-verification.mjs:294`의 타입 경고 2건이 남아 있습니다. PowerShell 실행 정책으로 `npm` 실행이 차단되면 `npm.cmd`를 사용합니다.
+검증 결과(2026년 11월 18일 보완): 빌드·단위 테스트 1개·E2E 223개·실제 HTTP 40건·DB 검사 9건·Newman 요청 26개와 검증 117개 통과. 공통 엔티티의 UTC 저장 훅과 시각 회귀 검사도 포함합니다. 린트는 종료 코드 0이며 기존 `test/books.db-verification.mjs:294`의 타입 경고 2건이 남아 있습니다. PowerShell 실행 정책으로 `npm` 실행이 차단되면 `npm.cmd`를 사용합니다.
+
+앞선 프런트엔드 연결용 [33건 검증 기록](output/week8/api-verification.json)은 당시 upsert·반복 삭제 성공 계약의 과거 자료입니다. 이번 PDF 제출에는 `docs/week8/`와 `output/week8-workbook/` 자료를 사용하세요.
 
 ## 7주차: 로그인한 사용자를 구분하기
 

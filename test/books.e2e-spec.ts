@@ -7,6 +7,9 @@ import { AppModule } from '../src/app.module.js';
 import { DatabaseService } from '../src/database/database.service.js';
 import { Book } from '../src/library/entities/book.entity.js';
 import { Category } from '../src/library/entities/category.entity.js';
+import { Favorite } from '../src/movie/entities/favorite.entity.js';
+import { Member } from '../src/movie/entities/member.entity.js';
+import { Rating } from '../src/movie/entities/rating.entity.js';
 
 describe('Books API (mock repositories)', () => {
   let app: INestApplication;
@@ -59,6 +62,8 @@ describe('Books API (mock repositories)', () => {
         getRepository: (entity: unknown) => {
           if (entity === Book) return bookRepository;
           if (entity === Category) return categoryRepository;
+          if ([Favorite, Member, Rating].includes(entity as typeof Favorite))
+            return {};
           throw new Error('Unexpected repository');
         },
         manager: {},

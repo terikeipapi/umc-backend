@@ -1,0 +1,1117 @@
+{
+  "verifiedAt": "2026-11-18T04:04:14.406Z",
+  "source": "Postman Collection executed by the actual Newman runtime, not Postman desktop UI.",
+  "stats": {
+    "iterations": {
+      "total": 1,
+      "pending": 0,
+      "failed": 0
+    },
+    "items": {
+      "total": 26,
+      "pending": 0,
+      "failed": 0
+    },
+    "scripts": {
+      "total": 27,
+      "pending": 0,
+      "failed": 0
+    },
+    "prerequests": {
+      "total": 26,
+      "pending": 0,
+      "failed": 0
+    },
+    "requests": {
+      "total": 26,
+      "pending": 0,
+      "failed": 0
+    },
+    "tests": {
+      "total": 26,
+      "pending": 0,
+      "failed": 0
+    },
+    "assertions": {
+      "total": 117,
+      "pending": 0,
+      "failed": 0
+    },
+    "testScripts": {
+      "total": 26,
+      "pending": 0,
+      "failed": 0
+    },
+    "prerequestScripts": {
+      "total": 1,
+      "pending": 0,
+      "failed": 0
+    }
+  },
+  "failures": [],
+  "cleanup": {
+    "members": 2,
+    "favorites": 2,
+    "ratings": 2
+  },
+  "executions": [
+    {
+      "name": "01 준비 - 회원 A 가입",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/members",
+        "body": {
+          "email": "postman8-76074a4-a@example.com",
+          "password": "[REDACTED]",
+          "nickname": "w8a76074a4"
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON201",
+          "message": "회원가입에 성공했습니다.",
+          "result": {
+            "memberId": 27,
+            "email": "postman8-76074a4-a@example.com",
+            "nickname": "w8a76074a4"
+          }
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 201",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON201",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "02 준비 - 회원 A 로그인",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/auth/login",
+        "body": {
+          "email": "postman8-76074a4-a@example.com",
+          "password": "[REDACTED]"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "로그인에 성공했습니다.",
+          "result": {
+            "nickname": "w8a76074a4",
+            "accessToken": "[REDACTED]"
+          }
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 200",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON200",
+          "passed": true
+        },
+        {
+          "assertion": "로그인 토큰 발급",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "03 준비 - 회원 B 가입",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/members",
+        "body": {
+          "email": "postman8-76074a4-b@example.com",
+          "password": "[REDACTED]",
+          "nickname": "w8b76074a4"
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON201",
+          "message": "회원가입에 성공했습니다.",
+          "result": {
+            "memberId": 28,
+            "email": "postman8-76074a4-b@example.com",
+            "nickname": "w8b76074a4"
+          }
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 201",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON201",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "04 준비 - 회원 B 로그인",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/auth/login",
+        "body": {
+          "email": "postman8-76074a4-b@example.com",
+          "password": "[REDACTED]"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "로그인에 성공했습니다.",
+          "result": {
+            "nickname": "w8b76074a4",
+            "accessToken": "[REDACTED]"
+          }
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 200",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON200",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "05 인증 없음 - 즐겨찾기 401",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/favorites",
+        "body": {
+          "movieId": 550
+        }
+      },
+      "response": {
+        "status": 401,
+        "body": {
+          "isSuccess": false,
+          "code": "AUTH401_2",
+          "message": "로그인이 필요한 요청입니다.",
+          "result": null
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 401",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 AUTH401_2",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "06 내 즐겨찾기 빈 목록",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/favorites"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "찜한 영화를 조회했습니다.",
+          "result": []
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 200",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON200",
+          "passed": true
+        },
+        {
+          "assertion": "빈 목록은 정상",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "07 즐겨찾기 전 여부 false",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/favorites/550"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "영화의 찜 여부를 조회했습니다.",
+          "result": {
+            "isFavorite": false
+          }
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 200",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON200",
+          "passed": true
+        },
+        {
+          "assertion": "isFavorite false",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "08 실습 인증 - 즐겨찾기 등록 201",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/favorites",
+        "body": {
+          "movieId": 550
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON201",
+          "message": "찜한 영화에 추가했습니다.",
+          "result": {
+            "favoriteId": 29,
+            "movieId": 550,
+            "createdAt": "2026-11-18T04:04:12.108Z"
+          }
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 201",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON201",
+          "passed": true
+        },
+        {
+          "assertion": "favoriteId/movieId/createdAt",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "09 실습 인증 - 중복 등록 409",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/favorites",
+        "body": {
+          "movieId": 550
+        }
+      },
+      "response": {
+        "status": 409,
+        "body": {
+          "isSuccess": false,
+          "code": "FAVORITE409_1",
+          "message": "이미 이 영화를 즐겨찾기하셨습니다.",
+          "result": null
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 409",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 FAVORITE409_1",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "10 실습 인증 - 내 즐겨찾기 목록 200",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/favorites"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "찜한 영화를 조회했습니다.",
+          "result": [
+            {
+              "favoriteId": 29,
+              "movieId": 550,
+              "createdAt": "2026-11-18T04:04:12.108Z"
+            }
+          ]
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 200",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON200",
+          "passed": true
+        },
+        {
+          "assertion": "내 영화 한 개",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "11 실습 인증 - 즐겨찾기 여부 true",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/favorites/550"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "영화의 찜 여부를 조회했습니다.",
+          "result": {
+            "isFavorite": true
+          }
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 200",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON200",
+          "passed": true
+        },
+        {
+          "assertion": "isFavorite true",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "12 회원 B의 목록은 비어 있음",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/favorites"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "찜한 영화를 조회했습니다.",
+          "result": []
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 200",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON200",
+          "passed": true
+        },
+        {
+          "assertion": "회원별 목록 분리",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "13 회원 B는 A의 즐겨찾기 해제 불가",
+      "request": {
+        "method": "DELETE",
+        "url": "http://localhost:3000/favorites/550"
+      },
+      "response": {
+        "status": 404,
+        "body": {
+          "isSuccess": false,
+          "code": "FAVORITE404_1",
+          "message": "즐겨찾기한 영화를 찾을 수 없습니다.",
+          "result": null
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 404",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 FAVORITE404_1",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "14 실습 인증 - 즐겨찾기 해제 200",
+      "request": {
+        "method": "DELETE",
+        "url": "http://localhost:3000/favorites/550"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "찜한 영화에서 삭제했습니다.",
+          "result": null
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 200",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON200",
+          "passed": true
+        },
+        {
+          "assertion": "삭제 공통 응답 null",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "15 해제 후 여부 false",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/favorites/550"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "영화의 찜 여부를 조회했습니다.",
+          "result": {
+            "isFavorite": false
+          }
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 200",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON200",
+          "passed": true
+        },
+        {
+          "assertion": "isFavorite false",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "16 해제 후 빈 목록",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/favorites"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "찜한 영화를 조회했습니다.",
+          "result": []
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 200",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON200",
+          "passed": true
+        },
+        {
+          "assertion": "빈 목록",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "17 없는 즐겨찾기 해제 404",
+      "request": {
+        "method": "DELETE",
+        "url": "http://localhost:3000/favorites/550"
+      },
+      "response": {
+        "status": 404,
+        "body": {
+          "isSuccess": false,
+          "code": "FAVORITE404_1",
+          "message": "즐겨찾기한 영화를 찾을 수 없습니다.",
+          "result": null
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 404",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 FAVORITE404_1",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "18 영화 ID 0 검증 400",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/favorites",
+        "body": {
+          "movieId": 0
+        }
+      },
+      "response": {
+        "status": 400,
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "영화 ID는 양수여야 합니다.",
+          "result": null
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 400",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON4001",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "19 실습 인증 - 영화 기록 동시 저장 201",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/movie-records",
+        "body": {
+          "movieId": 238,
+          "score": 5,
+          "comment": "다시 보고 싶은 영화입니다.",
+          "addToFavorites": true
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON201",
+          "message": "영화 기록을 저장했습니다.",
+          "result": {
+            "rating": {
+              "ratingId": 19,
+              "memberId": 27,
+              "movieId": 238,
+              "score": 5,
+              "comment": "다시 보고 싶은 영화입니다."
+            },
+            "favorite": {
+              "favoriteId": 30,
+              "movieId": 238,
+              "createdAt": "2026-11-18T04:04:13.371Z"
+            }
+          }
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 201",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON201",
+          "passed": true
+        },
+        {
+          "assertion": "평점과 즐겨찾기 함께 반환",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "20 영화 기록 중복 평점 409",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/movie-records",
+        "body": {
+          "movieId": 238,
+          "score": 3,
+          "addToFavorites": true
+        }
+      },
+      "response": {
+        "status": 409,
+        "body": {
+          "isSuccess": false,
+          "code": "RATING409_1",
+          "message": "이미 이 영화에 평점을 남기셨습니다.",
+          "result": null
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 409",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 RATING409_1",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "21 addToFavorites false는 평점만 저장",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/movie-records",
+        "body": {
+          "movieId": 13,
+          "score": 4,
+          "addToFavorites": false
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON201",
+          "message": "영화 기록을 저장했습니다.",
+          "result": {
+            "rating": {
+              "ratingId": 20,
+              "memberId": 27,
+              "movieId": 13,
+              "score": 4,
+              "comment": null
+            },
+            "favorite": null
+          }
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 201",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON201",
+          "passed": true
+        },
+        {
+          "assertion": "favorite null",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "22 false 기록은 즐겨찾기 없음",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/favorites/13"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON200",
+          "message": "영화의 찜 여부를 조회했습니다.",
+          "result": {
+            "isFavorite": false
+          }
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 200",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON200",
+          "passed": true
+        },
+        {
+          "assertion": "false 기록의 즐겨찾기 없음",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "23 충돌 준비 - 즐겨찾기 선등록",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/favorites",
+        "body": {
+          "movieId": 550
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": {
+          "isSuccess": true,
+          "code": "COMMON201",
+          "message": "찜한 영화에 추가했습니다.",
+          "result": {
+            "favoriteId": 31,
+            "movieId": 550,
+            "createdAt": "2026-11-18T04:04:13.910Z"
+          }
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 201",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON201",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "24 기존 즐겨찾기 영화 기록 409",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/movie-records",
+        "body": {
+          "movieId": 550,
+          "score": 5,
+          "addToFavorites": true
+        }
+      },
+      "response": {
+        "status": 409,
+        "body": {
+          "isSuccess": false,
+          "code": "FAVORITE409_1",
+          "message": "이미 이 영화를 즐겨찾기하셨습니다.",
+          "result": null
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 409",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 FAVORITE409_1",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "25 기록 요청 무토큰 401",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/movie-records",
+        "body": {
+          "movieId": 680,
+          "score": 5,
+          "addToFavorites": true
+        }
+      },
+      "response": {
+        "status": 401,
+        "body": {
+          "isSuccess": false,
+          "code": "AUTH401_2",
+          "message": "로그인이 필요한 요청입니다.",
+          "result": null
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 401",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 AUTH401_2",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "26 문자열 boolean 거절 400",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/movie-records",
+        "body": {
+          "movieId": 680,
+          "score": 5,
+          "addToFavorites": "true"
+        }
+      },
+      "response": {
+        "status": 400,
+        "body": {
+          "isSuccess": false,
+          "code": "COMMON4001",
+          "message": "즐겨찾기 추가 여부는 true 또는 false여야 합니다.",
+          "result": null
+        }
+      },
+      "assertions": [
+        {
+          "assertion": "HTTP 400",
+          "passed": true
+        },
+        {
+          "assertion": "공통 응답 형식",
+          "passed": true
+        },
+        {
+          "assertion": "isSuccess",
+          "passed": true
+        },
+        {
+          "assertion": "응답 코드 COMMON4001",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

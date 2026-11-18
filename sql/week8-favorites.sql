@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS favorite (
   member_id INT UNSIGNED NOT NULL,
   -- External TMDB ID, matching the range accepted by the HTTP API.
   movie_id BIGINT UNSIGNED NOT NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (favorite_id),
   CONSTRAINT uq_favorite_member_movie UNIQUE (member_id, movie_id),
   CONSTRAINT fk_favorite_member FOREIGN KEY (member_id) REFERENCES member(member_id),

@@ -7,6 +7,7 @@ import request from 'supertest';
 import { configureApp } from '../src/common/configure-app.js';
 import { DatabaseService } from '../src/database/database.service.js';
 import { MovieModule } from '../src/movie/movie.module.js';
+import { MockMovieOrmModule } from './helpers/movie-orm.module.js';
 
 describe('Week 7 movie API (JWT, validation, services; mock database)', () => {
   let app: INestApplication;
@@ -46,6 +47,7 @@ describe('Week 7 movie API (JWT, validation, services; mock database)', () => {
             }),
           ],
         }),
+        MockMovieOrmModule,
         MovieModule,
       ],
     })
